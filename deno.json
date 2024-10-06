@@ -1,0 +1,17 @@
+{
+  "exclude": [
+    "**/web/node_modules/*",
+    "**/web/.next/*",
+    "**/web/proto/*"
+  ],
+  "lint": {
+    "rules": {
+      "tags": [
+        "recommended"
+      ]
+    }
+  },
+  "fmt": {
+    "lineWidth": 120
+  }
+}

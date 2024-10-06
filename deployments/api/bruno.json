@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "acik-service",
+  "type": "collection",
+  "ignore": [
+    "tmp",
+    ".git"
+  ]
+}
