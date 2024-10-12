@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch acik-service",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "cwd": "${workspaceFolder}",
+      "program": "cmd/acik-service/"
+    },
+    {
+      "name": "Launch acik-webclient",
+      "type": "node-terminal",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/web",
+      "command": "deno run --inspect --allow-all dev",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ]
+}
