@@ -36,8 +36,8 @@ func NewRouter(path string) *RouterImpl {
 		mux:  mux,
 		path: path,
 
-		handlers: []Handler{},
-		routes:   []*Route{},
+		handlers: make([]Handler, 0),
+		routes:   make([]*Route, 0),
 	}
 }
 

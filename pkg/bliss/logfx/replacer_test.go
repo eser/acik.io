@@ -44,67 +44,67 @@ func TestReplacerGenerator(t *testing.T) { //nolint:funlen
 		{
 			name:       "PrettyMode=true, Key=slog.TimeKey",
 			prettyMode: true,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.TimeKey}, //nolint:exhaustruct
 			expected:   slog.Attr{},                  //nolint:exhaustruct
 		},
 		{
 			name:       "PrettyMode=true, Key=slog.LevelKey",
 			prettyMode: true,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.LevelKey}, //nolint:exhaustruct
 			expected:   slog.Attr{},                   //nolint:exhaustruct
 		},
 		{
 			name:       "PrettyMode=true, Key=slog.MessageKey",
 			prettyMode: true,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.MessageKey}, //nolint:exhaustruct
 			expected:   slog.Attr{},                     //nolint:exhaustruct
 		},
 		{
 			name:       "PrettyMode=false, Key=slog.TimeKey",
 			prettyMode: false,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.TimeKey}, //nolint:exhaustruct
 			expected:   slog.Attr{Key: slog.TimeKey}, //nolint:exhaustruct
 		},
 		{
 			name:       "PrettyMode=false, Key=slog.LevelKey",
 			prettyMode: false,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.LevelKey}, //nolint:exhaustruct
 			expected:   slog.Attr{Key: slog.LevelKey}, //nolint:exhaustruct
 		},
 		{
 			name:       "PrettyMode=false, Key=slog.MessageKey",
 			prettyMode: false,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.MessageKey}, //nolint:exhaustruct
 			expected:   slog.Attr{Key: slog.MessageKey}, //nolint:exhaustruct
 		},
 		{
 			name:       "PrettyMode=false, Key=slog.TimeKey, Value=error",
 			prettyMode: false,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.TimeKey, Value: slog.AnyValue(errors.New("test error"))}, //nolint:err113
 			expected:   slog.Attr{Key: slog.TimeKey, Value: slog.GroupValue(slog.String("msg", "test error"))},
 		},
 		{
 			name:       "PrettyMode=false, Key=slog.TimeKey, Value=error with StackTracer",
 			prettyMode: false,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.TimeKey, Value: slog.AnyValue(errors.New("test error"))}, //nolint:err113
 			expected:   slog.Attr{Key: slog.TimeKey, Value: slog.GroupValue(slog.String("msg", "test error"))},
 		},
 		{
 			name:       "PrettyMode=false, Key=slog.TimeKey, Value=error with mockError",
 			prettyMode: false,
-			groups:     []string{},
+			groups:     make([]string, 0),
 			attr:       slog.Attr{Key: slog.TimeKey, Value: slog.AnyValue(&mockError{msg: "test error"})}, //nolint:exhaustruct
 			expected: slog.Attr{
 				Key:   slog.TimeKey,
-				Value: slog.GroupValue(slog.String("msg", "test error"), slog.Any("trace", []string{})),
+				Value: slog.GroupValue(slog.String("msg", "test error"), slog.Any("trace", make([]string, 0))),
 			},
 		},
 	}
@@ -150,8 +150,8 @@ func TestTraceLines(t *testing.T) { //nolint:funlen
 	}{
 		{
 			name:     "Empty Stack",
-			stack:    []uintptr{},
-			expected: []string{},
+			stack:    make([]uintptr, 0),
+			expected: make([]string, 0),
 		},
 		{
 			name:  "Non-Empty Stack",

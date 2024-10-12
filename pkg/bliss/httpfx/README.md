@@ -69,4 +69,4 @@ router := httpfx.NewRouter("/")
 hs := httpfx.HttpService(config, router)
 ```
 
-TODO(@eser): rest of the documentation
+TODO(@eser) rest of the documentation

@@ -1,7 +1,6 @@
-package services
+package di
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -13,13 +12,14 @@ var Default = NewContainer() //nolint:gochecknoglobals
 // Register registers an implementation instance for a given interface.
 func Register[I any](c Container, impl I) {
 	targetType := reflect.TypeOf((*I)(nil)).Elem()
-	implValue := reflect.ValueOf(impl)
 
-	if targetType.Kind() == reflect.Interface && !implValue.Type().Implements(targetType) {
-		panic(fmt.Sprintf("Implementation type %s does not implement interface %s", implValue.Type(), targetType))
-	}
+	c.SetValue(targetType, impl)
+}
 
-	c.Set(targetType, implValue)
+func RegisterProvider[I any](c Container, provider any) {
+	targetType := reflect.TypeOf((*I)(nil)).Elem()
+
+	c.SetProvider(targetType, provider)
 }
 
 // Get retrieves a registered implementation for the given interface.
@@ -47,21 +47,7 @@ func MustGet[I any](c Container) I { //nolint:ireturn
 
 // Invoke calls a function, injecting dependencies based on its parameters.
 func Invoke(c Container, fn any) {
-	fnValue := reflect.ValueOf(fn)
+	invoker := c.CreateInvoker(fn)
 
-	fnType := fnValue.Type()
-	if fnType.Kind() != reflect.Func {
-		panic("Invoke parameter must be a function")
-	}
-
-	numIn := fnType.NumIn()
-	args := make([]reflect.Value, numIn)
-
-	for i := range numIn {
-		paramType := fnType.In(i)
-		argValue := c.MustResolve(paramType)
-		args[i] = argValue
-	}
-
-	fnValue.Call(args)
+	invoker()
 }

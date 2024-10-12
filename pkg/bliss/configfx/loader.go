@@ -71,7 +71,7 @@ func (cl *ConfigLoaderImpl) LoadMeta(i any) (ConfigItemMeta, error) {
 }
 
 func (cl *ConfigLoaderImpl) LoadMap(resources ...ConfigResource) (*map[string]any, error) {
-	target := map[string]any{}
+	target := make(map[string]any)
 
 	for _, resource := range resources {
 		err := resource(&target)
@@ -100,7 +100,7 @@ func (cl *ConfigLoaderImpl) Load(i any, resources ...ConfigResource) error {
 }
 
 func reflectMeta(r reflect.Value) ([]ConfigItemMeta, error) {
-	result := []ConfigItemMeta{}
+	result := make([]ConfigItemMeta, r.NumField())
 
 	if r.Kind() != reflect.Struct {
 		return nil, ErrNotStruct.New()
@@ -117,7 +117,7 @@ func reflectMeta(r reflect.Value) ([]ConfigItemMeta, error) {
 			}
 
 			if children != nil {
-				result = append(result, children...)
+				result[i] = children[i]
 			}
 
 			continue
@@ -142,7 +142,7 @@ func reflectMeta(r reflect.Value) ([]ConfigItemMeta, error) {
 			}
 		}
 
-		result = append(result, ConfigItemMeta{
+		result[i] = ConfigItemMeta{
 			Name:            tag,
 			Field:           structField,
 			Type:            structFieldType.Type,
@@ -151,7 +151,7 @@ func reflectMeta(r reflect.Value) ([]ConfigItemMeta, error) {
 			DefaultValue:    defaultValue,
 
 			Children: children,
-		})
+		}
 	}
 
 	return result, nil

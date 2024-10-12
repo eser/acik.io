@@ -178,7 +178,7 @@ func TestHandler_WithAttrs(t *testing.T) {
 	handler, _ := logfx.NewHandler(&bytes.Buffer{}, &logfx.Config{ //nolint:exhaustruct
 		Level: "info",
 	})
-	newHandler := handler.WithAttrs([]slog.Attr{})
+	newHandler := handler.WithAttrs(make([]slog.Attr, 0))
 	// FIXME(@eser) should equal or not?
 	assert.Equal(t, handler, newHandler)
 }

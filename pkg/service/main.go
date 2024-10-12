@@ -7,6 +7,8 @@ import (
 )
 
 func Run() {
+	bliss.Load()
+
 	app := fx.New(
 		fx.WithLogger(logfx.GetFxLogger),
 		bliss.FxModule,

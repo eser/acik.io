@@ -158,7 +158,7 @@ func ParsePattern(s string) (_ *Pattern, err error) { //nolint:funlen,gocognit,c
 	}
 
 	p.Path = rest
-	seenNames := map[string]bool{} // remember wildcard names to catch dups
+	seenNames := make(map[string]bool) // remember wildcard names to catch dups
 
 	for len(rest) > 0 {
 		// Invariant: rest[0] == '/'.
