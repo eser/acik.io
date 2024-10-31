@@ -83,7 +83,7 @@ func TestAuthMiddleware(t *testing.T) { //nolint:funlen
 			}
 
 			if tt.expectedStatusCode == http.StatusOK || tt.expectedStatusCode == http.StatusNoContent {
-				claims, claimsOk := httpCtx.Request.Context().Value(middlewares.AuthClaims).(jwt.MapClaims)
+				claims, claimsOk := httpCtx.Request.Context().Value(middlewares.ContextKeyAuthClaims).(jwt.MapClaims)
 
 				assert.True(t, claimsOk, "Claims are missing in context")
 

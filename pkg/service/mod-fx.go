@@ -3,54 +3,85 @@ package service
 import (
 	"fmt"
 
-	"github.com/eser/acik.io/pkg/bliss"
 	"github.com/eser/acik.io/pkg/bliss/configfx"
+	"github.com/eser/acik.io/pkg/bliss/datafx"
+	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
 	"github.com/eser/acik.io/pkg/bliss/httpfx/middlewares"
-	"github.com/eser/acik.io/pkg/bliss/httpfx/modules/healthcheck"
-	"github.com/eser/acik.io/pkg/bliss/httpfx/modules/openapi"
+	"github.com/eser/acik.io/pkg/bliss/logfx"
+	"github.com/eser/acik.io/pkg/bliss/metricsfx"
 	"github.com/eser/acik.io/pkg/service/config"
-	"github.com/eser/acik.io/pkg/service/routes/home"
-	"github.com/eser/acik.io/pkg/service/routes/protected"
-	"go.uber.org/fx"
 )
 
-var FxModule = fx.Module( //nolint:gochecknoglobals
-	"app",
-	fx.Invoke(
-		RegisterMiddlewares,
-		home.IndexRoutes,
-		protected.IndexRoutes,
-	),
-	fx.Provide(
-		bliss.LoadConfig[config.AppConfig](LoadConfig),
-	),
-	healthcheck.FxModule,
-	openapi.FxModule,
-)
+// var FxModule = fx.Module( //nolint:gochecknoglobals
+// 	"app",
+// 	fx.Invoke(
+// 		RegisterMiddlewares,
+// 		home.IndexRoutes,
+// 		protected.IndexRoutes,
+// 	),
+// 	fx.Provide(
+// 		bliss.LoadConfig(LoadConfig),
+// 	),
+// 	healthcheck.FxModule,
+// 	openapi.FxModule,
+// )
 
-func LoadConfig(cl configfx.ConfigLoader) (*config.AppConfig, error) {
+func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *httpfx.Config, error) {
 	appConfig := &config.AppConfig{} //nolint:exhaustruct
 
-	err := cl.Load(
+	err := loader.Load(
 		appConfig,
 
-		cl.FromJsonFile("config.json"),
-		cl.FromEnvFile(".env"),
-		cl.FromSystemEnv(),
+		loader.FromJsonFile("config.json"),
+		loader.FromEnvFile(".env"),
+		loader.FromSystemEnv(),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load config: %w", err)
+		return nil, nil, nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
-	return appConfig, nil
+	return appConfig, &appConfig.Log, &appConfig.Http, nil
 }
 
-func RegisterMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appConfig *config.AppConfig) {
+func RegisterMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appConfig *config.AppConfig) error {
 	routes.Use(middlewares.ErrorHandlerMiddleware())
 	routes.Use(middlewares.ResolveAddressMiddleware())
 	routes.Use(middlewares.ResponseTimeMiddleware())
 	routes.Use(middlewares.CorrelationIdMiddleware())
 	routes.Use(middlewares.CorsMiddleware())
 	routes.Use(middlewares.MetricsMiddleware(httpMetrics))
+
+	return nil
+}
+
+func Startup(container di.Container) error {
+	// TODO(@eser) load config
+	// TODO(@eser) load logger
+	// TODO(@eser) load metrics
+	// TODO(@eser) load database if any
+	// TODO(@eser) load redis if any
+	// TODO(@eser) load http router
+	// TODO(@eser) load http service
+
+	err := di.RegisterFn(
+		container,
+		configfx.Startup,
+		LoadConfig,
+
+		logfx.Startup,
+		metricsfx.Startup,
+		httpfx.Startup,
+		datafx.Startup,
+
+		// RegisterMiddlewares,
+
+		// healthcheck.RegisterRoutes,
+		// openapi.RegisterRoutes,
+
+		// home.RegisterIndexRoute,
+		// protected.RegisterIndexRoute,
+	)
+
+	return err
 }

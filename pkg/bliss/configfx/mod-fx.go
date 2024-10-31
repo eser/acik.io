@@ -1,26 +1,18 @@
 package configfx
 
 import (
-	"go.uber.org/fx"
+	"github.com/eser/acik.io/pkg/bliss/di"
 )
 
-var FxModule = fx.Module( //nolint:gochecknoglobals
-	"config",
-	fx.Provide(
-		FxNew,
-	),
-)
+// var FxModule = fx.Module( //nolint:gochecknoglobals
+// 	"config",
+// 	fx.Provide(
+// 		FxNew,
+// 	),
+// )
 
-type FxResult struct {
-	fx.Out
+func Startup(container di.Container) {
+	cl := NewConfigLoader()
 
-	ConfigLoader ConfigLoader
-}
-
-func FxNew() FxResult {
-	return FxResult{
-		Out: fx.Out{},
-
-		ConfigLoader: NewConfigLoader(),
-	}
+	di.RegisterFor[ConfigLoader](container, cl)
 }

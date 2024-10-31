@@ -54,12 +54,24 @@ includes its own interpretation.
 
   **On other OS or without Homebrew:**
 
+  - Install [Deno](https://docs.deno.com/runtime/getting_started/installation/)
   - Install and enable [pre-commit](https://pre-commit.com/#install)
   - Install [GNU make](https://www.gnu.org/software/make/)
+  - Install [protobuf](https://github.com/protocolbuffers/protobuf/releases)
+  - Install [Bruno CLI](https://docs.usebruno.com/bru-cli/overview#installation)
+  - Install [Air](https://github.com/air-verse/air#installation)
   - Install [govulncheck](https://go.googlesource.com/vuln)
-  - Install [gcov2lcov](https://github.com/jandelgado/gcov2lcov?tab=readme-ov-file#installation)
+  - Install [betteralign](https://github.com/dkorunic/betteralign#installation)
+  - Install [gcov2lcov](https://github.com/jandelgado/gcov2lcov#installation)
+  - Install [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
+  - Install [protoc-gen-go-grpc](https://github.com/grpc/grpc-go#installation)
 
   ```bash
+  $ curl -fsSL https://deno.land/install.sh | sh
+  Archive:  ~/.deno/bin/deno.zip
+  inflating: ~/.deno/bin/deno
+  Deno was installed successfully to ~/.deno/bin/deno
+
   $ brew install pre-commit
   ==> Fetching dependencies for pre-commit
   ==> Fetching pre-commit
@@ -74,14 +86,37 @@ includes its own interpretation.
   ==> Installing make
   ...
 
+  $ brew install protobuf
+  ==> Fetching dependencies for protobuf
+  ==> Fetching protobuf
+  ==> Installing dependencies for protobuf
+  ==> Installing protobuf
+  ...
+
+  $ deno install --global --no-lock --name bru --allow-all npm:@usebruno/cli
+  ✅ Successfully installed bru
+  ~/.deno/bin/bru
+
   $ pre-commit install
   pre-commit installed at .git/hooks/pre-commit
+
+  $ go install github.com/air-verse/air@latest
+  go: downloading github.com/air-verse/air v0.0.0
 
   $ go install golang.org/x/vuln/cmd/govulncheck@latest
   go: downloading golang.org/x/vuln/cmd/govulncheck v0.0.0
 
+  $ go install github.com/dkorunic/betteralign/cmd/betteralign@latest
+  go: downloading github.com/dkorunic/betteralign/cmd/betteralign v0.0.0
+
   $ go install github.com/jandelgado/gcov2lcov@latest
   go: downloading github.com/jandelgado/gcov2lcov v0.0.0
+
+  $ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+  go: downloading google.golang.org/protobuf/cmd/protoc-gen-go v0.0.0
+
+  $ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+  go: downloading google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0
   ```
 
 - 3️⃣ (Optional) Ensure that you can access private dependencies

@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
-	"go.uber.org/fx"
 )
 
 type ApiIdentity struct {
@@ -10,14 +9,14 @@ type ApiIdentity struct {
 	version string
 }
 
-var FxModule = fx.Module( //nolint:gochecknoglobals
-	"openapi",
-	fx.Invoke(
-		RegisterRoutes,
-	),
-)
+// var FxModule = fx.Module( //nolint:gochecknoglobals
+// 	"openapi",
+// 	fx.Invoke(
+// 		RegisterRoutes,
+// 	),
+// )
 
-func RegisterRoutes(routes httpfx.Router) {
+func RegisterRoutes(routes httpfx.Router) error {
 	routes.
 		Route("GET /openapi.json", func(ctx *httpfx.Context) httpfx.Result {
 			spec := &ApiIdentity{
@@ -31,4 +30,6 @@ func RegisterRoutes(routes httpfx.Router) {
 		}).
 		HasSummary("OpenAPI Spec").
 		HasDescription("OpenAPI Spec Endpoint")
+
+	return nil
 }

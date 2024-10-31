@@ -1,31 +1,47 @@
 package datafx
 
-import "database/sql"
+import "context"
+
+const DefaultDB = "default"
 
 type DataProvider interface {
-	CreateUnitOfWork() (UnitOfWork, error)
-	GetDB() *sql.DB
+	GetDefault() DbTransactionManager
+	GetNamed(name string) DbTransactionManager
+
+	CreateUnitOfWork(ctx context.Context) context.Context
 }
 
 type DataProviderImpl struct {
-	db *sql.DB
+	dbs map[string]DbTransactionManager
 }
 
 var _ DataProvider = (*DataProviderImpl)(nil)
 
-func NewDataProvider(db *sql.DB) *DataProviderImpl {
-	return &DataProviderImpl{db: db}
-}
-
-func (dp *DataProviderImpl) GetDB() *sql.DB {
-	return dp.db
-}
-
-func (dp *DataProviderImpl) CreateUnitOfWork() (UnitOfWork, error) { //nolint:ireturn
-	tx, err := dp.db.Begin()
-	if err != nil {
-		return nil, err //nolint:wrapcheck
+func NewDataProvider() *DataProviderImpl {
+	return &DataProviderImpl{
+		dbs: map[string]DbTransactionManager{
+			DefaultDB: nil,
+		},
 	}
+}
 
-	return NewUnitOfWork(tx), nil
+func (dp *DataProviderImpl) GetDefault() DbTransactionManager { //nolint:ireturn
+	return dp.dbs[DefaultDB]
+}
+
+func (dp *DataProviderImpl) GetNamed(name string) DbTransactionManager { //nolint:ireturn
+	return dp.dbs[name]
+}
+
+func (dp *DataProviderImpl) CreateUnitOfWork(ctx context.Context) context.Context {
+	uow := NewUnitOfWork()
+	newCtx := context.WithValue(ctx, ContextKeyUnitOfWork, uow)
+
+	return newCtx
+}
+
+func GetUnitOfWork(ctx context.Context) (UnitOfWork, bool) { //nolint:ireturn
+	uow, ok := ctx.Value(ContextKeyUnitOfWork).(UnitOfWork)
+
+	return uow, ok
 }

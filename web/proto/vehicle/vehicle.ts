@@ -120,20 +120,14 @@ function createBaseFindVehicleConditions(): FindVehicleConditions {
 }
 
 export const FindVehicleConditions: MessageFns<FindVehicleConditions> = {
-  encode(
-    message: FindVehicleConditions,
-    writer: BinaryWriter = new BinaryWriter(),
-  ): BinaryWriter {
+  encode(message: FindVehicleConditions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.brand !== "") {
       writer.uint32(10).string(message.brand);
     }
     return writer;
   },
 
-  decode(
-    input: BinaryReader | Uint8Array,
-    length?: number,
-  ): FindVehicleConditions {
+  decode(input: BinaryReader | Uint8Array, length?: number): FindVehicleConditions {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFindVehicleConditions() as any;
@@ -158,9 +152,7 @@ export const FindVehicleConditions: MessageFns<FindVehicleConditions> = {
   },
 
   fromJSON(object: any): FindVehicleConditions {
-    return {
-      brand: isSet(object.brand) ? globalThis.String(object.brand) : "",
-    };
+    return { brand: isSet(object.brand) ? globalThis.String(object.brand) : "" };
   },
 
   toJSON(message: FindVehicleConditions): unknown {
@@ -171,14 +163,10 @@ export const FindVehicleConditions: MessageFns<FindVehicleConditions> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FindVehicleConditions>, I>>(
-    base?: I,
-  ): FindVehicleConditions {
+  create<I extends Exact<DeepPartial<FindVehicleConditions>, I>>(base?: I): FindVehicleConditions {
     return FindVehicleConditions.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<FindVehicleConditions>, I>>(
-    object: I,
-  ): FindVehicleConditions {
+  fromPartial<I extends Exact<DeepPartial<FindVehicleConditions>, I>>(object: I): FindVehicleConditions {
     const message = createBaseFindVehicleConditions() as any;
     message.brand = object.brand ?? "";
     return message;
@@ -190,20 +178,14 @@ function createBaseFindOneVehicleConditions(): FindOneVehicleConditions {
 }
 
 export const FindOneVehicleConditions: MessageFns<FindOneVehicleConditions> = {
-  encode(
-    message: FindOneVehicleConditions,
-    writer: BinaryWriter = new BinaryWriter(),
-  ): BinaryWriter {
+  encode(message: FindOneVehicleConditions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
     return writer;
   },
 
-  decode(
-    input: BinaryReader | Uint8Array,
-    length?: number,
-  ): FindOneVehicleConditions {
+  decode(input: BinaryReader | Uint8Array, length?: number): FindOneVehicleConditions {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFindOneVehicleConditions() as any;
@@ -239,14 +221,10 @@ export const FindOneVehicleConditions: MessageFns<FindOneVehicleConditions> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FindOneVehicleConditions>, I>>(
-    base?: I,
-  ): FindOneVehicleConditions {
+  create<I extends Exact<DeepPartial<FindOneVehicleConditions>, I>>(base?: I): FindOneVehicleConditions {
     return FindOneVehicleConditions.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<FindOneVehicleConditions>, I>>(
-    object: I,
-  ): FindOneVehicleConditions {
+  fromPartial<I extends Exact<DeepPartial<FindOneVehicleConditions>, I>>(object: I): FindOneVehicleConditions {
     const message = createBaseFindOneVehicleConditions() as any;
     message.id = object.id ?? 0;
     return message;
@@ -258,10 +236,7 @@ function createBaseVehicles(): Vehicles {
 }
 
 export const Vehicles: MessageFns<Vehicles> = {
-  encode(
-    message: Vehicles,
-    writer: BinaryWriter = new BinaryWriter(),
-  ): BinaryWriter {
+  encode(message: Vehicles, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.vehicles) {
       Vehicle.encode(v!, writer.uint32(10).fork()).join();
     }
@@ -311,8 +286,7 @@ export const Vehicles: MessageFns<Vehicles> = {
   },
   fromPartial<I extends Exact<DeepPartial<Vehicles>, I>>(object: I): Vehicles {
     const message = createBaseVehicles() as any;
-    message.vehicles = object.vehicles?.map((e) => Vehicle.fromPartial(e)) ||
-      [];
+    message.vehicles = object.vehicles?.map((e) => Vehicle.fromPartial(e)) || [];
     return message;
   },
 };
@@ -322,10 +296,7 @@ function createBaseVehicle(): Vehicle {
 }
 
 export const Vehicle: MessageFns<Vehicle> = {
-  encode(
-    message: Vehicle,
-    writer: BinaryWriter = new BinaryWriter(),
-  ): BinaryWriter {
+  encode(message: Vehicle, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
@@ -492,11 +463,7 @@ export const VehicleServiceClient = makeGenericClientConstructor(
   VehicleServiceService,
   "vehicle.VehicleService",
 ) as unknown as {
-  new (
-    address: string,
-    credentials: ChannelCredentials,
-    options?: Partial<ClientOptions>,
-  ): VehicleServiceClient;
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): VehicleServiceClient;
   service: typeof VehicleServiceService;
   serviceName: string;
 };
@@ -510,14 +477,7 @@ export interface DataLoaders {
   getDataLoader<T>(identifier: string, constructorFn: () => T): T;
 }
 
-type Builtin =
-  | Date
-  | Function
-  | Uint8Array
-  | string
-  | number
-  | boolean
-  | undefined;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
   : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
@@ -527,10 +487,7 @@ export type DeepPartial<T> = T extends Builtin ? T
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
-  :
-    & P
-    & { [K in keyof P]: Exact<P[K], I[K]> }
-    & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

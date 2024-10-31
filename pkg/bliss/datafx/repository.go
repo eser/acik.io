@@ -6,6 +6,8 @@ import (
 )
 
 type DbExecutor interface {
+	PingContext(ctx context.Context) error
+	// Ping() error
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
 	// Exec(query string, args ...any) (sql.Result, error)
 	PrepareContext(ctx context.Context, query string) (*sql.Stmt, error)
@@ -16,6 +18,14 @@ type DbExecutor interface {
 	// QueryRow(query string, args ...any) *sql.Row
 }
 
+type DbTransactionManager interface {
+	DbExecutor
+
+	Begin() (DbTransactionManager, error)
+	Rollback() error
+	Commit() error
+}
+
 type Repository interface {
-	DbExecutor() DbExecutor
+	DbScope() DbExecutor
 }

@@ -37,10 +37,7 @@ function createBaseFindOneHeroConditions(): FindOneHeroConditions {
 }
 
 export const FindOneHeroConditions: MessageFns<FindOneHeroConditions> = {
-  encode(
-    message: FindOneHeroConditions,
-    writer: BinaryWriter = new BinaryWriter(),
-  ): BinaryWriter {
+  encode(message: FindOneHeroConditions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== undefined && message.id !== null) {
       writer.uint32(8).int32(message.id);
     }
@@ -50,10 +47,7 @@ export const FindOneHeroConditions: MessageFns<FindOneHeroConditions> = {
     return writer;
   },
 
-  decode(
-    input: BinaryReader | Uint8Array,
-    length?: number,
-  ): FindOneHeroConditions {
+  decode(input: BinaryReader | Uint8Array, length?: number): FindOneHeroConditions {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFindOneHeroConditions() as any;
@@ -103,14 +97,10 @@ export const FindOneHeroConditions: MessageFns<FindOneHeroConditions> = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<FindOneHeroConditions>, I>>(
-    base?: I,
-  ): FindOneHeroConditions {
+  create<I extends Exact<DeepPartial<FindOneHeroConditions>, I>>(base?: I): FindOneHeroConditions {
     return FindOneHeroConditions.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<FindOneHeroConditions>, I>>(
-    object: I,
-  ): FindOneHeroConditions {
+  fromPartial<I extends Exact<DeepPartial<FindOneHeroConditions>, I>>(object: I): FindOneHeroConditions {
     const message = createBaseFindOneHeroConditions() as any;
     message.id = object.id ?? undefined;
     message.type = object.type ?? undefined;
@@ -123,10 +113,7 @@ function createBaseHero(): Hero {
 }
 
 export const Hero: MessageFns<Hero> = {
-  encode(
-    message: Hero,
-    writer: BinaryWriter = new BinaryWriter(),
-  ): BinaryWriter {
+  encode(message: Hero, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id);
     }
@@ -248,15 +235,8 @@ export interface HeroServiceClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const HeroServiceClient = makeGenericClientConstructor(
-  HeroServiceService,
-  "hero.HeroService",
-) as unknown as {
-  new (
-    address: string,
-    credentials: ChannelCredentials,
-    options?: Partial<ClientOptions>,
-  ): HeroServiceClient;
+export const HeroServiceClient = makeGenericClientConstructor(HeroServiceService, "hero.HeroService") as unknown as {
+  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): HeroServiceClient;
   service: typeof HeroServiceService;
   serviceName: string;
 };
@@ -270,14 +250,7 @@ export interface DataLoaders {
   getDataLoader<T>(identifier: string, constructorFn: () => T): T;
 }
 
-type Builtin =
-  | Date
-  | Function
-  | Uint8Array
-  | string
-  | number
-  | boolean
-  | undefined;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
   : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
@@ -287,10 +260,7 @@ export type DeepPartial<T> = T extends Builtin ? T
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
-  :
-    & P
-    & { [K in keyof P]: Exact<P[K], I[K]> }
-    & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

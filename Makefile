@@ -3,15 +3,18 @@ TESTCOVERAGE_THRESHOLD=0
 
 .PHONY: init
 init:
-	brew install pre-commit
-	brew install make
-	brew install protobuf
-	pre-commit install
-	go install github.com/air-verse/air@latest
-	go install golang.org/x/vuln/cmd/govulncheck@latest
-	go install github.com/jandelgado/gcov2lcov@latest
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	command -v deno >/dev/null || curl -fsSL https://deno.land/install.sh | sh
+	command -v pre-commit >/dev/null || brew install pre-commit
+	command -v make >/dev/null || brew install make
+	command -v protoc >/dev/null || brew install protobuf
+	command -v bru >/dev/null || deno install --global --no-lock --name bru --allow-all npm:@usebruno/cli
+	[ -f .git/hooks/pre-commit ] || pre-commit install
+	command -v air >/dev/null || go install github.com/air-verse/air@latest
+	command -v govulncheck >/dev/null || go install golang.org/x/vuln/cmd/govulncheck@latest
+	command -v betteralign >/dev/null || go install github.com/dkorunic/betteralign/cmd/betteralign@latest
+	command -v gcov2lcov >/dev/null || go install github.com/jandelgado/gcov2lcov@latest
+	command -v protoc-gen-go >/dev/null || go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	command -v protoc-gen-go-grpc >/dev/null || go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 .PHONY: dev
 dev:
@@ -35,7 +38,7 @@ run: build
 
 .PHONY: test-api
 test-api:
-	cd ./deployments/api/ && \
+	cd ./ops/api-tests/ && \
 	bru run ./ --env development && \
 	cd ../../
 
@@ -78,49 +81,54 @@ dep:
 lint:
 	`go env GOPATH`/bin/golangci-lint run
 
+.PHONY: check
+check:
+	`go env GOPATH`/bin/govulncheck ./...
+	`go env GOPATH`/bin/betteralign ./...
+
 .PHONY: container-start
 container-start:
-	docker compose --file ./deployments/compose.yml up --detach
+	docker compose --file ./ops/docker/compose.yml up --detach
 
 .PHONY: container-rebuild
 container-rebuild:
-	docker compose --file ./deployments/compose.yml up --detach --build
+	docker compose --file ./ops/docker/compose.yml up --detach --build
 
 .PHONY: container-restart
 container-restart:
-	docker compose --file ./deployments/compose.yml restart
+	docker compose --file ./ops/docker/compose.yml restart
 
 .PHONY: container-stop
 container-stop:
-	docker compose --file ./deployments/compose.yml stop
+	docker compose --file ./ops/docker/compose.yml stop
 
 .PHONY: container-destroy
 container-destroy:
-	docker compose --file ./deployments/compose.yml down
+	docker compose --file ./ops/docker/compose.yml down
 
 .PHONY: container-update
 container-update:
-	docker compose --file ./deployments/compose.yml pull
+	docker compose --file ./ops/docker/compose.yml pull
 
 .PHONY: container-dev
 container-dev:
-	docker compose --file ./deployments/compose.yml watch
+	docker compose --file ./ops/docker/compose.yml watch
 
 .PHONY: container-ps
 container-ps:
-	docker compose --file ./deployments/compose.yml ps --all
+	docker compose --file ./ops/docker/compose.yml ps --all
 
 .PHONY: container-logs-all
 container-logs-all:
-	docker compose --file ./deployments/compose.yml logs
+	docker compose --file ./ops/docker/compose.yml logs
 
 .PHONY: container-logs
 container-logs:
-	docker compose --file ./deployments/compose.yml logs acik-service
+	docker compose --file ./ops/docker/compose.yml logs acik-service
 
 .PHONY: container-cli
 container-cli:
-	docker compose --file ./deployments/compose.yml exec acik-service bash
+	docker compose --file ./ops/docker/compose.yml exec acik-service bash
 
 .PHONY: container-push
 container-push:
@@ -135,19 +143,19 @@ endif
 # --ts_proto_opt="context=true,env=node,lowerCaseServiceMethods=true,outputServices=grpc-js,removeEnumPrefix=true,snakeToCamel=true,useAbortSignal=true,useAsyncIterable=true,useReadonlyTypes=true,comments=false,useNullAsOptional=true"
 generate-proto:
 	@{ \
-	  for f in ./proto/*; do \
+	  for f in ./specs/proto/*; do \
 	    current_proto="$$(basename $$f)"; \
 	    echo "Generating stubs for $$current_proto"; \
 			\
 			protoc --plugin=./web/node_modules/.bin/protoc-gen-ts_proto \
-				--proto_path=./proto/ \
+				--proto_path=./specs/proto/ \
 				--ts_proto_out=./web/proto/ \
 				--ts_proto_opt="context=true,lowerCaseServiceMethods=true,outputServices=grpc-js,removeEnumPrefix=false,snakeToCamel=true,useReadonlyTypes=true,comments=false,useNullAsOptional=true" \
-				"./proto/$$current_proto/$$current_proto.proto"; \
+				"./specs/proto/$$current_proto/$$current_proto.proto"; \
 			protoc \
-				--proto_path=./proto/ \
+				--proto_path=./specs/proto/ \
 				--go_out=./pkg/proto/ --go_opt=paths=source_relative \
 				--go-grpc_out=./pkg/proto/ --go-grpc_opt=paths=source_relative \
-				"./proto/$$current_proto/$$current_proto.proto"; \
+				"./specs/proto/$$current_proto/$$current_proto.proto"; \
 	  done \
 	}

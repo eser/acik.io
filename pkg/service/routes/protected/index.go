@@ -9,7 +9,7 @@ import (
 	"github.com/eser/acik.io/pkg/service/config"
 )
 
-func IndexRoutes(routes httpfx.Router, appConfig *config.AppConfig) {
+func RegisterIndexRoute(routes httpfx.Router, appConfig *config.AppConfig) error {
 	routes.
 		Route("GET /protected", middlewares.AuthMiddleware(), func(ctx *httpfx.Context) httpfx.Result {
 			message := fmt.Sprintf("Hello from %s! this endpoint is protected!", appConfig.AppName)
@@ -19,4 +19,6 @@ func IndexRoutes(routes httpfx.Router, appConfig *config.AppConfig) {
 		HasSummary("Protected page").
 		HasDescription("A page protected with JWT auth.").
 		HasResponse(http.StatusOK)
+
+	return nil
 }

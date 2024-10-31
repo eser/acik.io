@@ -1,31 +1,44 @@
 package datafx
 
-import "database/sql"
+type ContextKey string
+
+const (
+	ContextKeyUnitOfWork ContextKey = "unit-of-work"
+)
 
 type UnitOfWork interface {
 	Commit() error
 	Rollback() error
-	GetTx() *sql.Tx
+	GetScope() DbTransactionManager
 }
 
 type UnitOfWorkImpl struct {
-	tx *sql.Tx
+	scope DbTransactionManager
 }
 
 var _ UnitOfWork = (*UnitOfWorkImpl)(nil)
 
-func NewUnitOfWork(tx *sql.Tx) *UnitOfWorkImpl {
-	return &UnitOfWorkImpl{tx: tx}
+func NewUnitOfWork() *UnitOfWorkImpl {
+	// tx, _ := scope.Begin()
+	// if err != nil {
+	// 	return nil, err //nolint:wrapcheck
+	// }
+
+	return &UnitOfWorkImpl{}
 }
 
 func (uow *UnitOfWorkImpl) Commit() error {
-	return uow.tx.Commit() //nolint:wrapcheck
+	return uow.scope.Commit() //nolint:wrapcheck
 }
 
 func (uow *UnitOfWorkImpl) Rollback() error {
-	return uow.tx.Rollback() //nolint:wrapcheck
+	return uow.scope.Rollback() //nolint:wrapcheck
 }
 
-func (uow *UnitOfWorkImpl) GetTx() *sql.Tx {
-	return uow.tx
+func (uow *UnitOfWorkImpl) GetScope() DbTransactionManager { //nolint:ireturn
+	return uow.scope
+}
+
+func (uow *UnitOfWorkImpl) Use(fn func(DbExecutor) any) {
+	fn(uow.scope)
 }

@@ -1,28 +1,19 @@
 package datafx
 
 import (
-	"database/sql"
-
-	"go.uber.org/fx"
+	"github.com/eser/acik.io/pkg/bliss/di"
 )
 
-var FxModule = fx.Module( //nolint:gochecknoglobals
-	"data",
-	fx.Provide(
-		FxNew,
-	),
-)
+// var FxModule = fx.Module( //nolint:gochecknoglobals
+// 	"data",
+// 	fx.Provide(
+// 		FxNew,
+// 	),
+// )
 
-type FxResult struct {
-	fx.Out
+// TODO(@eser) multiple db support.
+func Startup(container di.Container) {
+	dp := NewDataProvider()
 
-	DataProvider DataProvider
-}
-
-func FxNew(db *sql.DB) FxResult {
-	return FxResult{
-		Out: fx.Out{},
-
-		DataProvider: NewDataProvider(db),
-	}
+	di.RegisterFor[DataProvider](container, dp)
 }

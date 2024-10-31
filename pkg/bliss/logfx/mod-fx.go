@@ -1,33 +1,23 @@
 package logfx
 
 import (
-	"log/slog"
-
-	"go.uber.org/fx"
+	"github.com/eser/acik.io/pkg/bliss/di"
 )
 
-var FxModule = fx.Module( //nolint:gochecknoglobals
-	"log",
-	fx.Provide(
-		FxNew,
-	),
-)
+// var FxModule = fx.Module( //nolint:gochecknoglobals
+// 	"log",
+// 	fx.Provide(
+// 		FxNew,
+// 	),
+// )
 
-type FxResult struct {
-	fx.Out
-
-	Logger *slog.Logger
-}
-
-func FxNew(config *Config) (FxResult, error) {
+func Startup(container di.Container, config *Config) error {
 	logger, err := NewLogger(config)
 	if err != nil {
-		return FxResult{}, err
+		return err
 	}
 
-	return FxResult{
-		Out: fx.Out{},
+	di.Register(container, logger)
 
-		Logger: logger,
-	}, nil
+	return nil
 }

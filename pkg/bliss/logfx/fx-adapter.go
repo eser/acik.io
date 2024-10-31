@@ -12,7 +12,6 @@ type (
 	}
 )
 
-//nolint:ireturn
 func GetFxLogger(logger *slog.Logger) fxevent.Logger {
 	return &FxLogger{logger}
 }

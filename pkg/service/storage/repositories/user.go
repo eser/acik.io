@@ -12,21 +12,21 @@ import (
 var ErrUserNotFound = errors.New("user not found")
 
 type UserRepository struct {
-	tx      datafx.DbExecutor
+	scope   datafx.DbExecutor
 	queries *db.Queries
 }
 
 var _ datafx.Repository = (*UserRepository)(nil)
 
-func NewUserRepository(tx datafx.DbExecutor) UserRepository {
+func NewUserRepository(scope datafx.DbExecutor) UserRepository {
 	return UserRepository{
-		tx:      tx,
-		queries: db.New(tx),
+		scope:   scope,
+		queries: db.New(scope),
 	}
 }
 
-func (r UserRepository) DbExecutor() datafx.DbExecutor { //nolint:ireturn
-	return r.tx
+func (r UserRepository) DbScope() datafx.DbExecutor { //nolint:ireturn
+	return r.scope
 }
 
 func (r UserRepository) GetById(ctx context.Context, id string) (*db.User, error) {

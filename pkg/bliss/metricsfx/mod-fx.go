@@ -1,26 +1,16 @@
 package metricsfx
 
-import (
-	"go.uber.org/fx"
-)
+import "github.com/eser/acik.io/pkg/bliss/di"
 
-var FxModule = fx.Module( //nolint:gochecknoglobals
-	"metrics",
-	fx.Provide(
-		FxNew,
-	),
-)
+// var FxModule = fx.Module( //nolint:gochecknoglobals
+// 	"metrics",
+// 	fx.Provide(
+// 		FxNew,
+// 	),
+// )
 
-type FxResult struct {
-	fx.Out
+func Startup(container di.Container) {
+	mp := NewMetricsProvider()
 
-	MetricsProvider MetricsProvider
-}
-
-func FxNew() FxResult {
-	return FxResult{
-		Out: fx.Out{},
-
-		MetricsProvider: NewMetricsProvider(),
-	}
+	di.RegisterFor[MetricsProvider](container, mp)
 }

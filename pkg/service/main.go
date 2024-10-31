@@ -1,19 +1,20 @@
 package service
 
 import (
-	"github.com/eser/acik.io/pkg/bliss"
-	"github.com/eser/acik.io/pkg/bliss/logfx"
-	"go.uber.org/fx"
+	"github.com/eser/acik.io/pkg/bliss/di"
 )
 
 func Run() {
-	bliss.Load()
+	err := Startup(di.Default)
+	if err != nil {
+		panic(err)
+	}
 
-	app := fx.New(
-		fx.WithLogger(logfx.GetFxLogger),
-		bliss.FxModule,
-		FxModule,
-	)
+	// app := fx.New(
+	// 	fx.WithLogger(logfx.GetFxLogger),
+	// 	bliss.FxModule,
+	// 	FxModule,
+	// )
 
-	app.Run()
+	// app.Run()
 }

@@ -10,21 +10,27 @@ type Implements[I any] struct{}
 var Default = NewContainer() //nolint:gochecknoglobals
 
 // Register registers an implementation instance for a given interface.
-func Register[I any](c Container, impl I) {
-	targetType := reflect.TypeOf((*I)(nil)).Elem()
-
-	c.SetValue(targetType, impl)
+func Register(c Container, v any) {
+	c.SetValue(v)
 }
 
-func RegisterProvider[I any](c Container, provider any) {
-	targetType := reflect.TypeOf((*I)(nil)).Elem()
+func RegisterFor[I any](c Container, v I) {
+	targetType := reflect.TypeFor[I]()
 
-	c.SetProvider(targetType, provider)
+	c.SetValueFor(targetType, v)
+}
+
+func RegisterFn(c Container, fns ...any) error {
+	return c.SetValuesFromFunc(fns...) //nolint:wrapcheck
+}
+
+func Seal(c Container) {
+	c.Seal()
 }
 
 // Get retrieves a registered implementation for the given interface.
 func Get[I any](c Container) (I, bool) { //nolint:ireturn
-	interfaceType := reflect.TypeOf((*I)(nil)).Elem()
+	interfaceType := reflect.TypeFor[I]()
 
 	impl, ok := c.Resolve(interfaceType)
 	if !ok {
@@ -33,21 +39,32 @@ func Get[I any](c Container) (I, bool) { //nolint:ireturn
 		return zero, false
 	}
 
-	return impl.Interface().(I), true //nolint:forcetypeassert
+	return impl.Value.(I), true //nolint:forcetypeassert
 }
 
 // MustGet retrieves a registered implementation or panics if not found.
 func MustGet[I any](c Container) I { //nolint:ireturn
-	interfaceType := reflect.TypeOf((*I)(nil)).Elem()
+	interfaceType := reflect.TypeFor[I]()
 
 	impl := c.MustResolve(interfaceType)
 
-	return impl.Interface().(I) //nolint:forcetypeassert
+	return impl.Value.(I) //nolint:forcetypeassert
 }
 
-// Invoke calls a function, injecting dependencies based on its parameters.
-func Invoke(c Container, fn any) {
-	invoker := c.CreateInvoker(fn)
+func CreateLister[I any](c Container) func() []DependencyTarget {
+	return c.CreateLister(reflect.TypeFor[I]())
+}
 
-	invoker()
+func DynamicList[I any](c Container) []DependencyTarget {
+	interfaceType := reflect.TypeFor[I]()
+
+	return c.DynamicList(interfaceType)
+}
+
+func CreateInvoker(c Container, fn any) func() error {
+	return c.CreateInvoker(fn)
+}
+
+func DynamicInvoke(c Container, fn any) error {
+	return c.DynamicInvoke(fn) //nolint:wrapcheck
 }

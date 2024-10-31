@@ -9,50 +9,69 @@ type Provider func(args []any) any
 
 // Container interface defines the methods for dependency injection container.
 type Container interface {
-	SetValue(interfaceType reflect.Type, value any)
-	SetProvider(interfaceType reflect.Type, provider any)
+	SetValue(value any)
+	SetValueFor(interfaceType reflect.Type, value any)
+	SetValuesFromFunc(fns ...any) error
 
-	Resolve(interfaceType reflect.Type) (reflect.Value, bool)
-	MustResolve(interfaceType reflect.Type) reflect.Value
+	Seal()
 
-	CreateInvoker(fn any) func()
+	Resolve(interfaceType reflect.Type) (DependencyTarget, bool)
+	MustResolve(interfaceType reflect.Type) DependencyTarget
+
+	CreateLister(interfaceType reflect.Type) func() []DependencyTarget
+	DynamicList(interfaceType reflect.Type) []DependencyTarget
+
+	CreateInvoker(fn any) func() error
+	DynamicInvoke(fn any) error
 }
 
-type DependencyType int
-
-const (
-	DependencyTypeAssignment DependencyType = iota
-	DependencyTypeInvocation
-)
-
 type DependencyTarget struct {
-	Type            DependencyType
-	ReflectionType  reflect.Type
 	ReflectionValue reflect.Value
+	Value           any
 }
 
 // ContainerImpl is the concrete implementation of the Container interface.
 type ContainerImpl struct {
+	isSealed bool
+
 	dependencies map[reflect.Type]DependencyTarget
-	// mutex    sync.RWMutex
 }
 
 var _ Container = (*ContainerImpl)(nil)
 
 var (
-	reflectTypeError     = reflect.TypeOf((*error)(nil)).Elem()     //nolint:gochecknoglobals
-	reflectTypeContainer = reflect.TypeOf((*Container)(nil)).Elem() //nolint:gochecknoglobals
+	reflectTypeError     = reflect.TypeFor[error]()     //nolint:gochecknoglobals
+	reflectTypeContainer = reflect.TypeFor[Container]() //nolint:gochecknoglobals
 )
 
 // NewContainer creates a new dependency injection container.
 func NewContainer() *ContainerImpl {
 	return &ContainerImpl{
+		isSealed: false,
+
 		dependencies: make(map[reflect.Type]DependencyTarget),
-		// mutex:    sync.RWMutex{},
 	}
 }
 
-func (c *ContainerImpl) SetValue(interfaceType reflect.Type, value any) {
+func (c *ContainerImpl) SetValue(value any) {
+	if c.isSealed {
+		panic("Container is sealed")
+	}
+
+	reflectionValue := reflect.ValueOf(value)
+	reflectionType := reflectionValue.Type()
+
+	c.dependencies[reflectionType] = DependencyTarget{
+		ReflectionValue: reflectionValue,
+		Value:           value,
+	}
+}
+
+func (c *ContainerImpl) SetValueFor(interfaceType reflect.Type, value any) {
+	if c.isSealed {
+		panic("Container is sealed")
+	}
+
 	reflectionValue := reflect.ValueOf(value)
 	reflectionType := reflectionValue.Type()
 
@@ -60,73 +79,75 @@ func (c *ContainerImpl) SetValue(interfaceType reflect.Type, value any) {
 		panic(fmt.Sprintf("Implementation type %s is not assignable to %s", reflectionType, interfaceType))
 	}
 
-	// c.mutex.Lock()
-	// defer c.mutex.Unlock()
 	c.dependencies[interfaceType] = DependencyTarget{
-		Type:            DependencyTypeAssignment,
-		ReflectionType:  reflectionType,
 		ReflectionValue: reflectionValue,
+		Value:           value,
 	}
 }
 
-func (c *ContainerImpl) SetProvider(interfaceType reflect.Type, provider any) {
-	fnValue := reflect.ValueOf(provider)
-
-	fnType := fnValue.Type()
-	if fnType.Kind() != reflect.Func {
-		panic("Provider must be a function")
+func (c *ContainerImpl) SetValuesFromFunc(fns ...any) error {
+	if c.isSealed {
+		panic("Container is sealed")
 	}
 
-	outNum := fnType.NumOut()
-	if outNum == 0 || (outNum > 1 && !fnType.Out(1).AssignableTo(reflectTypeError)) {
-		panic(
-			fmt.Sprintf("Provider must return a single value or a (value, error) pair that is assignable to %s", interfaceType),
-		)
-	}
+	for _, fn := range fns {
+		fnValue := reflect.ValueOf(fn)
 
-	if !fnType.Out(0).AssignableTo(interfaceType) {
-		panic(fmt.Sprintf("Provider %s does not return a value that is assignable to %s", fnType, interfaceType))
-	}
-
-	c.dependencies[interfaceType] = DependencyTarget{
-		Type:            DependencyTypeInvocation,
-		ReflectionType:  fnType,
-		ReflectionValue: fnValue,
-	}
-}
-
-func (c *ContainerImpl) Resolve(t reflect.Type) (reflect.Value, bool) {
-	if t.Implements(reflectTypeContainer) {
-		return reflect.ValueOf(c), true
-	}
-
-	// c.mutex.RLock()
-	target, ok := c.dependencies[t]
-	// c.mutex.RUnlock()
-
-	if !ok {
-		return reflect.Value{}, false
-	}
-
-	switch target.Type {
-	case DependencyTypeAssignment:
-		return target.ReflectionValue, true
-
-	case DependencyTypeInvocation:
-		args := c.resolveArgs(target.ReflectionType)
-
-		results := target.ReflectionValue.Call(args)
-		if len(results) == 2 && !results[1].IsNil() {
-			panic(results[1].Interface().(error).Error()) //nolint:forcetypeassert
+		fnType := fnValue.Type()
+		if fnType.Kind() != reflect.Func {
+			panic("Provider must be a function")
 		}
 
-		return results[0], true
+		outNum := fnType.NumOut()
+		lastOutTypeIsError := outNum > 0 && fnType.Out(outNum-1).AssignableTo(reflectTypeError)
+
+		var interfaceCount int
+		if lastOutTypeIsError {
+			interfaceCount = outNum - 1
+		} else {
+			interfaceCount = outNum
+		}
+
+		inArgs := c.resolveInArgs(fnType)
+		outArgs := fnValue.Call(inArgs)
+
+		if len(outArgs) == 0 {
+			continue
+		}
+
+		if lastOutTypeIsError && !outArgs[outNum-1].IsNil() {
+			return outArgs[outNum-1].Interface().(error) //nolint:forcetypeassert
+		}
+
+		for i := range interfaceCount {
+			interfaceType := fnType.Out(i)
+			reflectionValue := outArgs[i]
+
+			c.dependencies[interfaceType] = DependencyTarget{
+				ReflectionValue: reflectionValue,
+				Value:           reflectionValue.Interface(),
+			}
+		}
 	}
 
-	return reflect.Value{}, false
+	return nil
 }
 
-func (c *ContainerImpl) MustResolve(t reflect.Type) reflect.Value {
+func (c *ContainerImpl) Seal() {
+	c.isSealed = true
+}
+
+func (c *ContainerImpl) Resolve(t reflect.Type) (DependencyTarget, bool) {
+	if t.Implements(reflectTypeContainer) {
+		return DependencyTarget{reflect.ValueOf(c), c}, true
+	}
+
+	target, ok := c.dependencies[t]
+
+	return target, ok
+}
+
+func (c *ContainerImpl) MustResolve(t reflect.Type) DependencyTarget {
 	value, ok := c.Resolve(t)
 
 	if !ok {
@@ -136,29 +157,86 @@ func (c *ContainerImpl) MustResolve(t reflect.Type) reflect.Value {
 	return value
 }
 
-func (c *ContainerImpl) CreateInvoker(fn any) func() {
+func (c *ContainerImpl) CreateLister(t reflect.Type) func() []DependencyTarget { //nolint:varnamelen
+	if c.isSealed {
+		panic("Container is sealed")
+	}
+
+	var implementations []DependencyTarget
+
+	for it, target := range c.dependencies {
+		if (t.Kind() == reflect.Interface && it.Implements(t)) || it.AssignableTo(t) {
+			implementations = append(implementations, target)
+		}
+	}
+
+	return func() []DependencyTarget {
+		return implementations
+	}
+}
+
+func (c *ContainerImpl) DynamicList(t reflect.Type) []DependencyTarget {
+	var implementations []DependencyTarget
+
+	for it, target := range c.dependencies {
+		if (t.Kind() == reflect.Interface && it.Implements(t)) || it.AssignableTo(t) {
+			implementations = append(implementations, target)
+		}
+	}
+
+	return implementations
+}
+
+func (c *ContainerImpl) CreateInvoker(fn any) func() error {
+	if c.isSealed {
+		panic("Container is sealed")
+	}
+
 	fnValue := reflect.ValueOf(fn)
 
 	fnType := fnValue.Type()
 	if fnType.Kind() != reflect.Func {
-		panic("Invoke parameter must be a function")
+		panic("CreateInvoker parameter must be a function")
 	}
 
-	args := c.resolveArgs(fnType)
+	inArgs := c.resolveInArgs(fnType)
 
-	return func() {
-		fnValue.Call(args)
+	return func() error {
+		outArgs := fnValue.Call(inArgs)
+
+		if len(outArgs) > 0 && !outArgs[0].IsNil() {
+			return outArgs[0].Interface().(error) //nolint:forcetypeassert
+		}
+
+		return nil
 	}
 }
 
-func (c *ContainerImpl) resolveArgs(fnType reflect.Type) []reflect.Value {
+func (c *ContainerImpl) DynamicInvoke(fn any) error {
+	fnValue := reflect.ValueOf(fn)
+
+	fnType := fnValue.Type()
+	if fnType.Kind() != reflect.Func {
+		panic("DynamicInvoke parameter must be a function")
+	}
+
+	inArgs := c.resolveInArgs(fnType)
+	outArgs := fnValue.Call(inArgs)
+
+	if len(outArgs) > 0 && !outArgs[0].IsNil() {
+		return outArgs[0].Interface().(error) //nolint:forcetypeassert
+	}
+
+	return nil
+}
+
+func (c *ContainerImpl) resolveInArgs(fnType reflect.Type) []reflect.Value {
 	numIn := fnType.NumIn()
 	args := make([]reflect.Value, numIn)
 
 	for i := range args {
 		paramType := fnType.In(i)
-		argValue := c.MustResolve(paramType)
-		args[i] = argValue
+		args[i] = c.MustResolve(paramType).ReflectionValue
 	}
 
 	return args
