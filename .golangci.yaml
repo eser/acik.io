@@ -41,7 +41,6 @@ linters-settings:
           - $gostd
           - golang.org/x/net/http/httpguts
           - github.com/eser/acik.io
-          - go.uber.org/fx
           - github.com/oklog/ulid/v2
           - github.com/go-playground/validator/v10
           - github.com/stretchr/testify

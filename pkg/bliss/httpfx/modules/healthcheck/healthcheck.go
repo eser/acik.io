@@ -6,13 +6,6 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
 )
 
-// var FxModule = fx.Module( //nolint:gochecknoglobals
-// 	"healthcheck",
-// 	fx.Invoke(
-// 		RegisterRoutes,
-// 	),
-// )
-
 func RegisterRoutes(routes httpfx.Router) error {
 	routes.
 		Route("GET /health-check", func(ctx *httpfx.Context) httpfx.Result {

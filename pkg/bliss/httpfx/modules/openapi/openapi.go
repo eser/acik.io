@@ -9,13 +9,6 @@ type ApiIdentity struct {
 	version string
 }
 
-// var FxModule = fx.Module( //nolint:gochecknoglobals
-// 	"openapi",
-// 	fx.Invoke(
-// 		RegisterRoutes,
-// 	),
-// )
-
 func RegisterRoutes(routes httpfx.Router) error {
 	routes.
 		Route("GET /openapi.json", func(ctx *httpfx.Context) httpfx.Result {

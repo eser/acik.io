@@ -3,7 +3,7 @@
 ## Overview
 
 The **httpfx** package provides a framework for building HTTP services with support for routing, middleware, and OpenAPI
-documentation generation. The package is designed to work seamlessly with the `go.uber.org/fx` framework.
+documentation generation. The package is designed to work seamlessly with the `bliss/di` package.
 
 The documentation below provides an overview of the package, its types, functions, and usage examples. For more detailed
 information, refer to the source code and tests.
@@ -26,24 +26,22 @@ type Config struct {
 }
 ```
 
-## Fx
+## Bliss DI
 
-The `httpfx` package provides an `FxModule` that can be used to integrate with the `go.uber.org/fx` framework.
+The `httpfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di` package.
 
 ```go
 import (
   ...
+  "github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
-	"go.uber.org/fx"
   ...
 )
 
-app := fx.New(
-	httpfx.FxModule,                    // registers httpfx.HttpService and httpfx.Router
+err := di.RegisterFn(
+	httpfx.RegisterDependencies,                    // registers httpfx.HttpService and httpfx.Router
 	...
 )
-
-app.Run()
 ```
 
 ## API

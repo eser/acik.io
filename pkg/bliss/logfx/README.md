@@ -3,7 +3,7 @@
 ## Overview
 
 The **logfx** package is a configurable logging solution leverages the `log/slog` of the standard library for structured
-logging. It includes pretty-printing options and a fx module for the `go.uber.org/fx` framework. The package also has
+logging. It includes pretty-printing options and a fx module for the `bliss/di` package. The package also has
 extensive tests to ensure reliability and correctness, covering configuration parsing, handler behavior and the custom
 error formatting logic.
 
@@ -22,26 +22,22 @@ type Config struct {
 }
 ```
 
-## Fx
+## Bliss DI
 
-The `logfx` package provides an `FxModule` and `GetFxLogger` that can be used to integrate with the `go.uber.org/fx`
-framework.
+The `logfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di` package.
 
 ```go
 import (
   ...
+  "github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
-	"go.uber.org/fx"
   ...
 )
 
-app := fx.New(
-	fx.WithLogger(logfx.GetFxLogger),  // handles fx lifecycle events
-	logfx.FxModule,                    // registers slog.Logger
+err := di.RegisterFn(
+	logfx.RegisterDependencies,
 	...
 )
-
-app.Run()
 ```
 
 ## API

@@ -4,29 +4,27 @@
 
 The **configfx** package provides a flexible and powerful configuration loader for Go applications. It supports loading
 configuration from various sources, including environment files, JSON files, and system environment variables. The
-package is designed to work seamlessly with the `go.uber.org/fx` framework.
+package is designed to work seamlessly with the `bliss/di` package.
 
 The documentation below provides an overview of the package, its types, functions, and usage examples. For more detailed
 information, refer to the source code and tests.
 
-## Fx
+## Bliss DI
 
-The `configfx` package provides an `FxModule` that can be used to integrate with the `go.uber.org/fx` framework.
+The `configfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di` package.
 
 ```go
 import (
   ...
+  "github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/configfx"
-	"go.uber.org/fx"
   ...
 )
 
-app := fx.New(
-	configfx.FxModule,                 // registers configfx.ConfigLoader
+err := di.RegisterFn(
+	configfx.RegisterDependencies,                 // registers configfx.ConfigLoader
 	...
 )
-
-app.Run()
 ```
 
 ## API
