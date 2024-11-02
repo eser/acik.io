@@ -7,16 +7,15 @@ import (
 )
 
 type BaseConfig struct {
-	Env string `conf:"ENV" default:"development"`
-
-	Log  logfx.Config  `conf:"LOG"`
-	Http httpfx.Config `conf:"HTTP"`
-
 	// AppName           string `conf:"APP_NAME" default:"acik-service"`
 	// JwtSignature      string `conf:"JWT_SIGNATURE"`
 	// CorsOrigin        string `conf:"CORS_ORIGIN"`
 	// CorsStrictHeaders bool   `conf:"CORS_STRICT_HEADERS"`
 	// DataConnstr       string `conf:"DATA_CONNSTR"`
+	Env string `conf:"ENV" default:"development"`
+
+	Log  logfx.Config  `conf:"LOG"`
+	Http httpfx.Config `conf:"HTTP"`
 }
 
 func LoadConfig[T any](

@@ -26,15 +26,15 @@ type Container interface {
 }
 
 type DependencyTarget struct {
-	ReflectionValue reflect.Value
 	Value           any
+	ReflectionValue reflect.Value
 }
 
 // ContainerImpl is the concrete implementation of the Container interface.
 type ContainerImpl struct {
-	isSealed bool
-
 	dependencies map[reflect.Type]DependencyTarget
+
+	isSealed bool
 }
 
 var _ Container = (*ContainerImpl)(nil)
@@ -139,7 +139,7 @@ func (c *ContainerImpl) Seal() {
 
 func (c *ContainerImpl) Resolve(t reflect.Type) (DependencyTarget, bool) {
 	if t.Implements(reflectTypeContainer) {
-		return DependencyTarget{reflect.ValueOf(c), c}, true
+		return DependencyTarget{ReflectionValue: reflect.ValueOf(c), Value: c}, true
 	}
 
 	target, ok := c.dependencies[t]

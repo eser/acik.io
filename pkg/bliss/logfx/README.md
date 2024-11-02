@@ -3,9 +3,9 @@
 ## Overview
 
 The **logfx** package is a configurable logging solution leverages the `log/slog` of the standard library for structured
-logging. It includes pretty-printing options and a fx module for the `bliss/di` package. The package also has
-extensive tests to ensure reliability and correctness, covering configuration parsing, handler behavior and the custom
-error formatting logic.
+logging. It includes pretty-printing options and a fx module for the `bliss/di` package. The package also has extensive
+tests to ensure reliability and correctness, covering configuration parsing, handler behavior and the custom error
+formatting logic.
 
 The documentation below provides an overview of the package, its types, functions, and usage examples. For more detailed
 information, refer to the source code and tests.
@@ -24,7 +24,8 @@ type Config struct {
 
 ## Bliss DI
 
-The `logfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di` package.
+The `logfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di`
+package.
 
 ```go
 import (

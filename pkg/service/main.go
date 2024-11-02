@@ -1,16 +1,24 @@
 package service
 
 import (
+	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/eser/acik.io/pkg/bliss/configfx"
 	"github.com/eser/acik.io/pkg/bliss/datafx"
 	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
 	"github.com/eser/acik.io/pkg/bliss/httpfx/middlewares"
+	"github.com/eser/acik.io/pkg/bliss/httpfx/modules/healthcheck"
+	"github.com/eser/acik.io/pkg/bliss/httpfx/modules/openapi"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
 	"github.com/eser/acik.io/pkg/service/config"
+	"github.com/eser/acik.io/pkg/service/routes/home"
+	"github.com/eser/acik.io/pkg/service/routes/protected"
 )
 
 func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *httpfx.Config, error) {
@@ -41,17 +49,9 @@ func RegisterMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appC
 	return nil
 }
 
-func Startup(container di.Container) error {
-	// TODO(@eser) load config
-	// TODO(@eser) load logger
-	// TODO(@eser) load metrics
-	// TODO(@eser) load database if any
-	// TODO(@eser) load redis if any
-	// TODO(@eser) load http router
-	// TODO(@eser) load http service
-
+func Run() {
 	err := di.RegisterFn(
-		container,
+		di.Default,
 		configfx.RegisterDependencies,
 		LoadConfig,
 
@@ -60,20 +60,43 @@ func Startup(container di.Container) error {
 		httpfx.RegisterDependencies,
 		datafx.RegisterDependencies,
 
-		// RegisterMiddlewares,
+		RegisterMiddlewares,
 
-		// healthcheck.RegisterRoutes,
-		// openapi.RegisterRoutes,
+		healthcheck.RegisterRoutes,
+		openapi.RegisterRoutes,
 
-		// home.RegisterIndexRoute,
-		// protected.RegisterIndexRoute,
+		home.RegisterIndexRoute,
+		protected.RegisterIndexRoute,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	run := di.CreateInvoker(
+		di.Default,
+		func(
+			httpService httpfx.HttpService,
+		) error {
+			ctx := context.Background()
+
+			cleanup, err := httpService.Start(ctx)
+			if err != nil {
+				return err //nolint:wrapcheck
+			}
+
+			sigChan := make(chan os.Signal, 1)
+			signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+			<-sigChan
+
+			cleanup()
+
+			return nil
+		},
 	)
 
-	return err
-}
+	di.Seal(di.Default)
 
-func Run() {
-	err := Startup(di.Default)
+	err = run()
 	if err != nil {
 		panic(err)
 	}

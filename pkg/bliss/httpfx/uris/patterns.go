@@ -29,6 +29,7 @@ type Pattern struct {
 	Method string
 	Host   string
 	Path   string
+	Loc    string // source location of registering call, for helpful messages
 	// The representation of a path differs from the surface syntax, which
 	// simplifies most algorithms.
 	//
@@ -40,7 +41,6 @@ type Pattern struct {
 	// For example, the path "a/{$}" is represented as a literal segment "a" followed
 	// by a literal segment "/".
 	Segments []Segment
-	Loc      string // source location of registering call, for helpful messages
 }
 
 func (p *Pattern) String() string { return p.Str }

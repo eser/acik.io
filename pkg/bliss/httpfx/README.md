@@ -28,7 +28,8 @@ type Config struct {
 
 ## Bliss DI
 
-The `httpfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di` package.
+The `httpfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di`
+package.
 
 ```go
 import (

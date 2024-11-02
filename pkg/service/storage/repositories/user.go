@@ -25,7 +25,8 @@ func NewUserRepository(scope datafx.DbExecutor) UserRepository {
 	}
 }
 
-func (r UserRepository) DbScope() datafx.DbExecutor { //nolint:ireturn
+//nolint:ireturn
+func (r UserRepository) DbScope() datafx.DbExecutor {
 	return r.scope
 }
 

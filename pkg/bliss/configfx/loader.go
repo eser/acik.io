@@ -17,14 +17,14 @@ const (
 var ErrNotStruct = results.Define("ERRBC00001", "not a struct") //nolint:gochecknoglobals
 
 type ConfigItemMeta struct {
-	Name            string
-	Field           reflect.Value
-	Type            reflect.Type
+	Type         reflect.Type
+	Field        reflect.Value
+	Name         string
+	DefaultValue string
+
+	Children        []ConfigItemMeta
 	IsRequired      bool
 	HasDefaultValue bool
-	DefaultValue    string
-
-	Children []ConfigItemMeta
 }
 
 type ConfigResource func(target *map[string]any) error

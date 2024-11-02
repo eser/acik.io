@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"os"
 
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
 )
@@ -16,8 +15,7 @@ type HttpService interface {
 	Server() *http.Server
 	Router() Router
 
-	Start(ctx context.Context) error
-	Stop(ctx context.Context) error
+	Start(ctx context.Context) (func(), error)
 }
 
 type HttpServiceImpl struct {
@@ -58,51 +56,44 @@ func (hs *HttpServiceImpl) Router() Router { //nolint:ireturn
 	return hs.InnerRouter
 }
 
-func (hs *HttpServiceImpl) Start(ctx context.Context) error {
+func (hs *HttpServiceImpl) Start(ctx context.Context) (func(), error) {
 	slog.InfoContext(ctx, "HttpService is starting...", slog.String("addr", hs.Config.Addr))
 
-	// serverErr := make(chan error, 1)
-
-	go func() {
-		ln, lnErr := net.Listen("tcp", hs.InnerServer.Addr)
-
-		if lnErr != nil {
-			// serverErr <- fmt.Errorf("HttpService Net Listen error: %w", lnErr)
-			os.Exit(1)
-
-			return
-		}
-
-		if sErr := hs.Server().Serve(ln); sErr != nil && !errors.Is(sErr, http.ErrServerClosed) {
-			// serverErr <- fmt.Errorf("HttpService Serve error: %w", sErr)
-			os.Exit(1)
-
-			return
-		}
-
-		// serverErr <- nil
-	}() //nolint:wsl
-
-	// if err := <-serverErr; err != nil {
-	// 	return err
-	// }
-
-	return nil
-}
-
-func (hs *HttpServiceImpl) Stop(ctx context.Context) error {
-	slog.InfoContext(ctx, "HttpService is stopping...")
-
-	shutdownCtx, cancel := context.WithTimeout(ctx, hs.Config.GracefulShutdownTimeout)
-	defer cancel()
-
-	err := hs.InnerServer.Shutdown(shutdownCtx)
-	if err != nil && !errors.Is(err, http.ErrServerClosed) {
-		return fmt.Errorf("HttpService forced to shutdown: %w", err)
+	listener, lnErr := net.Listen("tcp", hs.InnerServer.Addr)
+	if lnErr != nil {
+		return nil, fmt.Errorf("HttpService Net Listen error: %w", lnErr)
 	}
 
-	<-shutdownCtx.Done()
-	slog.InfoContext(ctx, "HttpService has stopped...")
+	serverErrChan := make(chan error, 1)
 
-	return nil
+	go func() {
+		if sErr := hs.Server().Serve(listener); sErr != nil && !errors.Is(sErr, http.ErrServerClosed) {
+			serverErrChan <- fmt.Errorf("HttpService Serve error: %w", sErr)
+		}
+
+		close(serverErrChan)
+	}()
+
+	if err := <-serverErrChan; err != nil {
+		listener.Close() //nolint:errcheck,gosec
+
+		return nil, err
+	}
+
+	cleanup := func() {
+		slog.InfoContext(ctx, "Shutting down server...")
+
+		newCtx, cancel := context.WithTimeout(ctx, hs.Config.GracefulShutdownTimeout)
+		defer cancel()
+
+		if err := hs.InnerServer.Shutdown(newCtx); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slog.ErrorContext(ctx, "HttpService forced to shutdown", slog.Any("error", err))
+
+			return
+		}
+
+		slog.InfoContext(ctx, "HttpService has gracefully stopped.")
+	}
+
+	return cleanup, nil
 }

@@ -11,4 +11,5 @@ func RegisterDependencies(container di.Container, config *Config, mp metricsfx.M
 
 	di.RegisterFor[Router](container, routes)
 	di.RegisterFor[HttpService](container, httpService)
+	di.Register(container, httpService.InnerMetrics)
 }

@@ -11,7 +11,8 @@ information, refer to the source code and tests.
 
 ## Bliss DI
 
-The `configfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di` package.
+The `configfx` package provides a `RegisterDependencies` function that can be used to integrate with the `bliss/di`
+package.
 
 ```go
 import (
