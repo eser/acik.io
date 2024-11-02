@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: check-added-large-files
         args: ["--maxkb=1024"]
@@ -25,7 +25,7 @@ repos:
         args: ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
       - id: trailing-whitespace
   - repo: https://github.com/crate-ci/typos
-    rev: v1.25.0
+    rev: v1.27.0
     hooks:
       - id: typos
         verbose: true
@@ -37,7 +37,7 @@ repos:
             go.mod
           )$
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.4.0
+    rev: v3.6.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]

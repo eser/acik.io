@@ -75,6 +75,9 @@ jobs:
       - name: Setup govulncheck
         run: go install golang.org/x/vuln/cmd/govulncheck@latest
 
+      - name: Setup betteralign
+        run: go install github.com/dkorunic/betteralign/cmd/betteralign@latest
+
       - name: Setup gcov2lcov
         run: go install github.com/jandelgado/gcov2lcov@latest
 
