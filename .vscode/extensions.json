@@ -6,6 +6,7 @@
     "EditorConfig.EditorConfig",
     "github.vscode-github-actions",
     "golang.go",
-    "ryanluker.vscode-coverage-gutters"
+    "ryanluker.vscode-coverage-gutters",
+    "unifiedjs.vscode-mdx"
   ]
 }

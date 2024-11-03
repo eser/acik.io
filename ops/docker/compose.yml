@@ -16,7 +16,6 @@ services:
           target: /app/
           ignore:
             - .*
-            - docs/
             - tmp/
     environment:
       PORT: 8080
