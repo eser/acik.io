@@ -64,21 +64,11 @@ func (hs *HttpServiceImpl) Start(ctx context.Context) (func(), error) {
 		return nil, fmt.Errorf("HttpService Net Listen error: %w", lnErr)
 	}
 
-	serverErrChan := make(chan error, 1)
-
 	go func() {
-		if sErr := hs.Server().Serve(listener); sErr != nil && !errors.Is(sErr, http.ErrServerClosed) {
-			serverErrChan <- fmt.Errorf("HttpService Serve error: %w", sErr)
+		if sErr := hs.InnerServer.Serve(listener); sErr != nil && !errors.Is(sErr, http.ErrServerClosed) {
+			slog.ErrorContext(ctx, "HttpService Serve error: %w", slog.Any("error", sErr))
 		}
-
-		close(serverErrChan)
 	}()
-
-	if err := <-serverErrChan; err != nil {
-		listener.Close() //nolint:errcheck,gosec
-
-		return nil, err
-	}
 
 	cleanup := func() {
 		slog.InfoContext(ctx, "Shutting down server...")

@@ -151,9 +151,6 @@ generate-proto:
 				--proto_path=./specs/proto/ \
 				--ts_proto_out=./web/proto/ \
 				--ts_proto_opt="context=true,lowerCaseServiceMethods=true,outputServices=grpc-js,removeEnumPrefix=false,snakeToCamel=true,useReadonlyTypes=true,comments=false,useNullAsOptional=true" \
-				"./specs/proto/$$current_proto/$$current_proto.proto"; \
-			protoc \
-				--proto_path=./specs/proto/ \
 				--go_out=./pkg/proto/ --go_opt=paths=source_relative \
 				--go-grpc_out=./pkg/proto/ --go-grpc_opt=paths=source_relative \
 				"./specs/proto/$$current_proto/$$current_proto.proto"; \
