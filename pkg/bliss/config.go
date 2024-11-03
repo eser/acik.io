@@ -2,11 +2,13 @@ package bliss
 
 import (
 	"github.com/eser/acik.io/pkg/bliss/configfx"
+	"github.com/eser/acik.io/pkg/bliss/datafx"
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 )
 
 type BaseConfig struct {
+	Data datafx.Config `conf:"DATA"`
 	// AppName           string `conf:"APP_NAME" default:"acik-service"`
 	// JwtSignature      string `conf:"JWT_SIGNATURE"`
 	// CorsOrigin        string `conf:"CORS_ORIGIN"`

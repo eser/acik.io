@@ -1,0 +1,9 @@
+{
+  "data": {
+    "sources": {
+      "main": {
+        "dsn": "postgres://postgres:postgres@localhost:5432/postgres"
+      }
+    }
+  }
+}

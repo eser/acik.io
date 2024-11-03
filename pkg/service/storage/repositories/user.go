@@ -24,9 +24,10 @@ func NewUserRepository(scope datafx.DbExecutor) UserRepository {
 		queries: db.New(scope),
 	}
 }
-func (r UserRepository) DbScope() datafx.DbExecutor {
-	return r.scope
-}
+
+// func (r UserRepository) DbScope() datafx.DbExecutor { //nolint:ireturn
+// 	return r.scope
+// }
 
 func (r UserRepository) GetById(ctx context.Context, id string) (*db.User, error) {
 	row, err := r.queries.GetUserById(ctx, id)

@@ -3,6 +3,7 @@ package configfx
 import (
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/eser/acik.io/pkg/bliss/results"
@@ -12,6 +13,8 @@ const (
 	tagConf     = "conf"
 	tagDefault  = "default"
 	tagRequired = "required"
+
+	separator = "__"
 )
 
 var ErrNotStruct = results.Define("ERRBC00001", "not a struct") //nolint:gochecknoglobals
@@ -161,8 +164,57 @@ func reflectSet(meta ConfigItemMeta, prefix string, target *map[string]any) {
 	for _, child := range meta.Children {
 		key := prefix + child.Name
 
+		if child.Type.Kind() == reflect.Map {
+			// Create a new map
+			newMap := reflect.MakeMap(child.Type)
+
+			// Find all keys that start with our prefix
+			prefix := key + separator
+			for k := range *target { //nolint:varnamelen
+				if !strings.HasPrefix(k, prefix) {
+					continue
+				}
+
+				// Extract the map key from the flattened key
+				mapKey := strings.TrimPrefix(k, prefix)
+				if idx := strings.Index(mapKey, separator); idx != -1 {
+					mapKey = mapKey[:idx]
+				}
+
+				// Create and set the map value
+				valueType := child.Type.Elem()
+				mapValue := reflect.New(valueType).Elem()
+
+				// Recursively set the fields of the map value
+				subMeta := ConfigItemMeta{
+					Name:            mapKey,
+					Field:           mapValue,
+					Type:            valueType,
+					IsRequired:      child.IsRequired,
+					HasDefaultValue: child.HasDefaultValue,
+					DefaultValue:    child.DefaultValue,
+
+					Children: nil,
+				}
+
+				if valueType.Kind() == reflect.Struct {
+					children, _ := reflectMeta(mapValue)
+					subMeta.Children = children
+				}
+
+				reflectSet(subMeta, prefix+mapKey+separator, target)
+
+				// Set the value in the map
+				newMap.SetMapIndex(reflect.ValueOf(mapKey), mapValue)
+			}
+
+			child.Field.Set(newMap)
+
+			continue
+		}
+
 		if child.Type.Kind() == reflect.Struct {
-			reflectSet(child, key+"__", target)
+			reflectSet(child, key+separator, target)
 
 			continue
 		}

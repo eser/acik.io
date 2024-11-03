@@ -27,5 +27,5 @@ type DbTransactionManager interface {
 }
 
 type Repository interface {
-	DbScope() DbExecutor
+	// DbScope() DbExecutor
 }

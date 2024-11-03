@@ -21,7 +21,7 @@ import (
 	"github.com/eser/acik.io/pkg/service/routes/protected"
 )
 
-func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *httpfx.Config, error) {
+func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *httpfx.Config, *datafx.Config, error) { //nolint:lll
 	appConfig := &config.AppConfig{} //nolint:exhaustruct
 
 	err := loader.Load(
@@ -32,10 +32,10 @@ func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config,
 		loader.FromSystemEnv(),
 	)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("failed to load config: %w", err)
+		return nil, nil, nil, nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
-	return appConfig, &appConfig.Log, &appConfig.Http, nil
+	return appConfig, &appConfig.Log, &appConfig.Http, &appConfig.Data, nil
 }
 
 func RegisterMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appConfig *config.AppConfig) error {
