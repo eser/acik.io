@@ -67,7 +67,7 @@ Example:
 
 ```go
 type AppConfig struct {
-	AppName  string `conf:"NAME" default:"acik-service"`
+	AppName  string `conf:"NAME" default:"acik.io"`
 
   Postgres struct {
 		Dsn string `conf:"DSN" default:"postgres://localhost:5432"`

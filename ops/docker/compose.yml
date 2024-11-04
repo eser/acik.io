@@ -1,7 +1,7 @@
 name: development
 
 services:
-  acik-service:
+  http-service:
     tty: true
     stdin_open: true
     restart: unless-stopped
@@ -34,7 +34,7 @@ services:
       options:
         fluentd-address: localhost:24224
         fluentd-async-connect: "true"
-        tag: acik-service
+        tag: http-service
 
   postgres:
     image: postgres:16-bookworm

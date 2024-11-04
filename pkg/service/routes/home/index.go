@@ -9,7 +9,7 @@ import (
 	"github.com/eser/acik.io/pkg/service/config"
 )
 
-func RegisterIndexRoute(routes httpfx.Router, appConfig *config.AppConfig) error {
+func RegisterIndexRoute(routes httpfx.Router, appConfig *config.AppConfig) {
 	routes.
 		Route("GET /", func(ctx *httpfx.Context) httpfx.Result {
 			message := fmt.Sprintf(
@@ -24,6 +24,4 @@ func RegisterIndexRoute(routes httpfx.Router, appConfig *config.AppConfig) error
 		HasSummary("Homepage").
 		HasDescription("This is the homepage of the service.").
 		HasResponse(http.StatusOK)
-
-	return nil
 }

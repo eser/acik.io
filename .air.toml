@@ -4,8 +4,8 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./tmp/acik-service"
-  cmd = "go build -o ./tmp/acik-service ./cmd/acik-service/"
+  bin = "./tmp/http-service"
+  cmd = "go build -o ./tmp/http-service ./cmd/http-service/"
   delay = 1000
   exclude_dir = ["tmp", "vendor", "testdata"]
   exclude_file = []

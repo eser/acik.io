@@ -1,11 +1,8 @@
-package service
+package main
 
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/eser/acik.io/pkg/bliss/configfx"
 	"github.com/eser/acik.io/pkg/bliss/datafx"
@@ -14,6 +11,7 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/httpfx/middlewares"
 	"github.com/eser/acik.io/pkg/bliss/httpfx/modules/healthcheck"
 	"github.com/eser/acik.io/pkg/bliss/httpfx/modules/openapi"
+	"github.com/eser/acik.io/pkg/bliss/lib"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
 	"github.com/eser/acik.io/pkg/service/config"
@@ -49,7 +47,7 @@ func RegisterMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appC
 	return nil
 }
 
-func Run() {
+func main() {
 	err := di.RegisterFn(
 		di.Default,
 		configfx.RegisterDependencies,
@@ -84,9 +82,7 @@ func Run() {
 				return err //nolint:wrapcheck
 			}
 
-			sigChan := make(chan os.Signal, 1)
-			signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-			<-sigChan
+			lib.WaitForSignal()
 
 			cleanup()
 

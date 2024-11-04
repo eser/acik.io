@@ -18,11 +18,15 @@ init:
 
 .PHONY: dev
 dev:
-	air; if [ $$? -ne 0 ]; then go run ./cmd/acik-service/; fi
+	air; if [ $$? -ne 0 ]; then go run ./cmd/http-service/; fi
+
+.PHONY: dev-grpc
+dev-grpc:
+	go run ./cmd/grpc-service/
 
 .PHONY: build
 build:
-	go build -o ./tmp/dist/acik-service ./cmd/acik-service/
+	go build -o ./tmp/dist/http-service ./cmd/http-service/
 
 .PHONY: generate
 generate:
@@ -34,7 +38,7 @@ clean:
 
 .PHONY: run
 run: build
-	./tmp/dist/acik-service
+	./tmp/dist/http-service
 
 .PHONY: test-api
 test-api:
@@ -124,17 +128,17 @@ container-logs-all:
 
 .PHONY: container-logs
 container-logs:
-	docker compose --file ./ops/docker/compose.yml logs acik-service
+	docker compose --file ./ops/docker/compose.yml logs http-service
 
 .PHONY: container-cli
 container-cli:
-	docker compose --file ./ops/docker/compose.yml exec acik-service bash
+	docker compose --file ./ops/docker/compose.yml exec http-service bash
 
 .PHONY: container-push
 container-push:
 ifdef VERSION
-	docker build --platform=linux/amd64 -t acikyazilim.registry.cpln.io/acik-service:v$(VERSION) .
-	docker push acikyazilim.registry.cpln.io/acik-service:v$(VERSION)
+	docker build --platform=linux/amd64 -t acikyazilim.registry.cpln.io/http-service:v$(VERSION) .
+	docker push acikyazilim.registry.cpln.io/http-service:v$(VERSION)
 else
 	@echo "VERSION is not set"
 endif

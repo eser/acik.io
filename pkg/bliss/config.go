@@ -3,13 +3,14 @@ package bliss
 import (
 	"github.com/eser/acik.io/pkg/bliss/configfx"
 	"github.com/eser/acik.io/pkg/bliss/datafx"
+	"github.com/eser/acik.io/pkg/bliss/grpcfx"
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 )
 
 type BaseConfig struct {
 	Data datafx.Config `conf:"DATA"`
-	// AppName           string `conf:"APP_NAME" default:"acik-service"`
+	// AppName           string `conf:"APP_NAME" default:"acik.io"`
 	// JwtSignature      string `conf:"JWT_SIGNATURE"`
 	// CorsOrigin        string `conf:"CORS_ORIGIN"`
 	// CorsStrictHeaders bool   `conf:"CORS_STRICT_HEADERS"`
@@ -17,6 +18,7 @@ type BaseConfig struct {
 	Env string `conf:"ENV" default:"development"`
 
 	Log  logfx.Config  `conf:"LOG"`
+	Grpc grpcfx.Config `conf:"GRPC"`
 	Http httpfx.Config `conf:"HTTP"`
 }
 
