@@ -1,0 +1,85 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"os"
+
+	"github.com/eser/acik.io/pkg/bliss/configfx"
+	"github.com/eser/acik.io/pkg/bliss/datafx"
+	"github.com/eser/acik.io/pkg/bliss/di"
+	"github.com/eser/acik.io/pkg/bliss/logfx"
+	"github.com/eser/acik.io/pkg/bliss/metricsfx"
+	"github.com/eser/acik.io/pkg/service/config"
+	"github.com/pressly/goose/v3"
+)
+
+func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *datafx.Config, error) {
+	appConfig := &config.AppConfig{} //nolint:exhaustruct
+
+	err := loader.LoadDefaults(appConfig)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("failed to load config: %w", err)
+	}
+
+	return appConfig, &appConfig.Log, &appConfig.Data, nil
+}
+
+func main() {
+	err := di.RegisterFn(
+		di.Default,
+		configfx.RegisterDependencies,
+		LoadConfig,
+
+		logfx.RegisterDependencies,
+		metricsfx.RegisterDependencies,
+		datafx.RegisterDependencies,
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	run := di.CreateInvoker(
+		di.Default,
+		func(
+			dataProvider datafx.DataProvider,
+		) error {
+			allArgs := os.Args[1:]
+			if len(allArgs) == 0 {
+				return errors.New("command argument is required") //nolint:err113
+			}
+
+			command := allArgs[0]
+			args := allArgs[1:]
+
+			database := dataProvider.GetDefault()
+
+			if database == nil {
+				return errors.New("database is not initialized") //nolint:err113
+			}
+
+			err := goose.RunWithOptionsContext(
+				context.Background(),
+				command,
+				database,
+				"./ops/migrations/",
+				args,
+			)
+			if err != nil {
+				return fmt.Errorf("failed to run migrations: %w", err)
+			}
+
+			fmt.Println("migrations applied") //nolint:forbidigo
+
+			return nil
+		},
+	)
+
+	di.Seal(di.Default)
+
+	err = run()
+	if err != nil {
+		panic(err)
+	}
+}

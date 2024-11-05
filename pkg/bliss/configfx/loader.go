@@ -36,6 +36,7 @@ type ConfigLoader interface {
 	LoadMeta(i any) (ConfigItemMeta, error)
 	LoadMap(resources ...ConfigResource) (*map[string]any, error)
 	Load(i any, resources ...ConfigResource) error
+	LoadDefaults(i any) error
 
 	FromEnvFileDirect(filename string) ConfigResource
 	FromEnvFile(filename string) ConfigResource
@@ -100,6 +101,15 @@ func (cl *ConfigLoaderImpl) Load(i any, resources ...ConfigResource) error {
 	reflectSet(meta, "", target)
 
 	return nil
+}
+
+func (cl *ConfigLoaderImpl) LoadDefaults(i any) error {
+	return cl.Load(
+		i,
+		cl.FromJsonFile("config.json"),
+		cl.FromEnvFile(".env"),
+		cl.FromSystemEnv(),
+	)
 }
 
 func reflectMeta(r reflect.Value) ([]ConfigItemMeta, error) {
@@ -170,13 +180,13 @@ func reflectSet(meta ConfigItemMeta, prefix string, target *map[string]any) {
 
 			// Find all keys that start with our prefix
 			prefix := key + separator
-			for k := range *target { //nolint:varnamelen
-				if !strings.HasPrefix(k, prefix) {
+			for key := range *target {
+				if !strings.HasPrefix(key, prefix) {
 					continue
 				}
 
 				// Extract the map key from the flattened key
-				mapKey := strings.TrimPrefix(k, prefix)
+				mapKey := strings.TrimPrefix(key, prefix)
 				if idx := strings.Index(mapKey, separator); idx != -1 {
 					mapKey = mapKey[:idx]
 				}

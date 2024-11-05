@@ -52,7 +52,7 @@ services:
     networks:
       - acik-io-network
     ports:
-      - 5435:5432
+      - 5432:5432
     depends_on:
       fluentd:
         condition: service_healthy

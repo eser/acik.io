@@ -5,7 +5,7 @@ import (
 )
 
 func RegisterDependencies(container di.Container, config *Config) error {
-	logger, err := NewLogger(config)
+	logger, err := NewLoggerAsDefault(config)
 	if err != nil {
 		return err
 	}

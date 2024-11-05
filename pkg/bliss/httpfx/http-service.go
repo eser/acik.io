@@ -24,11 +24,17 @@ type HttpServiceImpl struct {
 	InnerMetrics *Metrics
 
 	Config *Config
+	logger *slog.Logger
 }
 
 var _ HttpService = (*HttpServiceImpl)(nil)
 
-func NewHttpService(config *Config, router Router, mp metricsfx.MetricsProvider) *HttpServiceImpl {
+func NewHttpService(
+	config *Config,
+	router Router,
+	metricsProvider metricsfx.MetricsProvider,
+	logger *slog.Logger,
+) *HttpServiceImpl {
 	server := &http.Server{ //nolint:exhaustruct
 		ReadHeaderTimeout: config.ReadHeaderTimeout,
 		ReadTimeout:       config.ReadTimeout,
@@ -43,8 +49,9 @@ func NewHttpService(config *Config, router Router, mp metricsfx.MetricsProvider)
 	return &HttpServiceImpl{
 		InnerServer:  server,
 		InnerRouter:  router,
-		InnerMetrics: NewMetrics(mp),
+		InnerMetrics: NewMetrics(metricsProvider),
 		Config:       config,
+		logger:       logger,
 	}
 }
 
@@ -57,7 +64,7 @@ func (hs *HttpServiceImpl) Router() Router { //nolint:ireturn
 }
 
 func (hs *HttpServiceImpl) Start(ctx context.Context) (func(), error) {
-	slog.InfoContext(ctx, "HttpService is starting...", slog.String("addr", hs.Config.Addr))
+	hs.logger.InfoContext(ctx, "HttpService is starting...", slog.String("addr", hs.Config.Addr))
 
 	listener, lnErr := net.Listen("tcp", hs.InnerServer.Addr)
 	if lnErr != nil {
@@ -66,23 +73,23 @@ func (hs *HttpServiceImpl) Start(ctx context.Context) (func(), error) {
 
 	go func() {
 		if sErr := hs.InnerServer.Serve(listener); sErr != nil && !errors.Is(sErr, http.ErrServerClosed) {
-			slog.ErrorContext(ctx, "HttpService Serve error: %w", slog.Any("error", sErr))
+			hs.logger.ErrorContext(ctx, "HttpService Serve error: %w", slog.Any("error", sErr))
 		}
 	}()
 
 	cleanup := func() {
-		slog.InfoContext(ctx, "Shutting down server...")
+		hs.logger.InfoContext(ctx, "Shutting down server...")
 
 		newCtx, cancel := context.WithTimeout(ctx, hs.Config.GracefulShutdownTimeout)
 		defer cancel()
 
 		if err := hs.InnerServer.Shutdown(newCtx); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			slog.ErrorContext(ctx, "HttpService forced to shutdown", slog.Any("error", err))
+			hs.logger.ErrorContext(ctx, "HttpService forced to shutdown", slog.Any("error", err))
 
 			return
 		}
 
-		slog.InfoContext(ctx, "HttpService has gracefully stopped.")
+		hs.logger.InfoContext(ctx, "HttpService has gracefully stopped.")
 	}
 
 	return cleanup, nil

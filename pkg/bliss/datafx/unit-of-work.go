@@ -1,5 +1,10 @@
 package datafx
 
+import (
+	"context"
+	"fmt"
+)
+
 type ContextKey string
 
 const (
@@ -9,22 +14,24 @@ const (
 type UnitOfWork interface {
 	Commit() error
 	Rollback() error
-	GetScope() DbTransactionManager
+	GetScope() DbExecutorTx
 }
 
 type UnitOfWorkImpl struct {
-	scope DbTransactionManager
+	scope DbExecutorTx
 }
 
 var _ UnitOfWork = (*UnitOfWorkImpl)(nil)
 
-func NewUnitOfWork() *UnitOfWorkImpl {
-	// tx, _ := scope.Begin()
-	// if err != nil {
-	// 	return nil, err //nolint:wrapcheck
-	// }
+func NewUnitOfWork(db DbExecutorDb) (*UnitOfWorkImpl, error) {
+	transaction, err := db.BeginTx(context.TODO(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
 
-	return &UnitOfWorkImpl{}
+	return &UnitOfWorkImpl{
+		scope: transaction,
+	}, nil
 }
 
 func (uow *UnitOfWorkImpl) Commit() error {
@@ -35,7 +42,7 @@ func (uow *UnitOfWorkImpl) Rollback() error {
 	return uow.scope.Rollback() //nolint:wrapcheck
 }
 
-func (uow *UnitOfWorkImpl) GetScope() DbTransactionManager { //nolint:ireturn
+func (uow *UnitOfWorkImpl) GetScope() DbExecutorTx { //nolint:ireturn
 	return uow.scope
 }
 

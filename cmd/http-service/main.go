@@ -22,13 +22,7 @@ import (
 func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *httpfx.Config, *datafx.Config, error) { //nolint:lll
 	appConfig := &config.AppConfig{} //nolint:exhaustruct
 
-	err := loader.Load(
-		appConfig,
-
-		loader.FromJsonFile("config.json"),
-		loader.FromEnvFile(".env"),
-		loader.FromSystemEnv(),
-	)
+	err := loader.LoadDefaults(appConfig)
 	if err != nil {
 		return nil, nil, nil, nil, fmt.Errorf("failed to load config: %w", err)
 	}

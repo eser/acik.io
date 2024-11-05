@@ -22,11 +22,12 @@ type GrpcServiceImpl struct {
 	InnerServer  *grpc.Server
 	InnerMetrics *Metrics
 	Config       *Config
+	logger       *slog.Logger
 }
 
 var _ GrpcService = (*GrpcServiceImpl)(nil)
 
-func NewGrpcService(config *Config, metricsProvider metricsfx.MetricsProvider) *GrpcServiceImpl {
+func NewGrpcService(config *Config, metricsProvider metricsfx.MetricsProvider, logger *slog.Logger) *GrpcServiceImpl {
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(MetricsInterceptor(metricsProvider)),
 	)
@@ -39,6 +40,7 @@ func NewGrpcService(config *Config, metricsProvider metricsfx.MetricsProvider) *
 		InnerServer:  server,
 		InnerMetrics: NewMetrics(metricsProvider),
 		Config:       config,
+		logger:       logger,
 	}
 }
 
@@ -51,7 +53,7 @@ func (gs *GrpcServiceImpl) RegisterService(desc *grpc.ServiceDesc, impl any) {
 }
 
 func (gs *GrpcServiceImpl) Start(ctx context.Context) (func(), error) {
-	slog.InfoContext(ctx, "GrpcService is starting...", slog.String("addr", gs.Config.Addr))
+	gs.logger.InfoContext(ctx, "GrpcService is starting...", slog.String("addr", gs.Config.Addr))
 
 	listener, err := net.Listen("tcp", gs.Config.Addr)
 	if err != nil {
@@ -60,12 +62,12 @@ func (gs *GrpcServiceImpl) Start(ctx context.Context) (func(), error) {
 
 	go func() {
 		if err := gs.InnerServer.Serve(listener); err != nil {
-			slog.ErrorContext(ctx, "GrpcService Serve error", slog.Any("error", err))
+			gs.logger.ErrorContext(ctx, "GrpcService Serve error", slog.Any("error", err))
 		}
 	}()
 
 	cleanup := func() {
-		slog.InfoContext(ctx, "Shutting down gRPC server...")
+		gs.logger.InfoContext(ctx, "Shutting down gRPC server...")
 
 		stopped := make(chan struct{})
 		go func() {
@@ -75,9 +77,9 @@ func (gs *GrpcServiceImpl) Start(ctx context.Context) (func(), error) {
 
 		select {
 		case <-stopped:
-			slog.InfoContext(ctx, "GrpcService has gracefully stopped.")
+			gs.logger.InfoContext(ctx, "GrpcService has gracefully stopped.")
 		case <-time.After(gs.Config.GracefulShutdownTimeout):
-			slog.WarnContext(ctx, "GrpcService shutdown timeout exceeded, forcing stop")
+			gs.logger.WarnContext(ctx, "GrpcService shutdown timeout exceeded, forcing stop")
 			gs.InnerServer.Stop()
 		}
 	}

@@ -1,6 +1,8 @@
 # .RECIPEPREFIX := $(.RECIPEPREFIX)<space>
 TESTCOVERAGE_THRESHOLD=0
 
+ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
 .PHONY: init
 init:
 	command -v deno >/dev/null || curl -fsSL https://deno.land/install.sh | sh
@@ -12,6 +14,7 @@ init:
 	command -v air >/dev/null || go install github.com/air-verse/air@latest
 	command -v govulncheck >/dev/null || go install golang.org/x/vuln/cmd/govulncheck@latest
 	command -v betteralign >/dev/null || go install github.com/dkorunic/betteralign/cmd/betteralign@latest
+	command -v goose >/dev/null || go install github.com/pressly/goose/v3/cmd/goose@latest
 	command -v gcov2lcov >/dev/null || go install github.com/jandelgado/gcov2lcov@latest
 	command -v protoc-gen-go >/dev/null || go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	command -v protoc-gen-go-grpc >/dev/null || go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
@@ -23,6 +26,10 @@ dev:
 .PHONY: dev-grpc
 dev-grpc:
 	go run ./cmd/grpc-service/
+
+.PHONY: migrate
+migrate:
+	go run ./cmd/migrate/ $(ARGS)
 
 .PHONY: build
 build:
@@ -89,6 +96,14 @@ lint:
 check:
 	`go env GOPATH`/bin/govulncheck ./...
 	`go env GOPATH`/bin/betteralign ./...
+
+.PHONY: postgres-start
+postgres-start:
+	docker compose --file ./ops/docker/compose.yml up --detach postgres
+
+.PHONY: postgres-stop
+postgres-stop:
+	docker compose --file ./ops/docker/compose.yml stop postgres
 
 .PHONY: container-start
 container-start:
@@ -160,3 +175,6 @@ generate-proto:
 				"./specs/proto/$$current_proto/$$current_proto.proto"; \
 	  done \
 	}
+
+%:
+	@:
