@@ -14,13 +14,12 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/lib"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
-	"github.com/eser/acik.io/pkg/service/config"
-	"github.com/eser/acik.io/pkg/service/routes/home"
-	"github.com/eser/acik.io/pkg/service/routes/protected"
+	"github.com/eser/acik.io/pkg/service"
+	"github.com/eser/acik.io/pkg/service/broadcast"
 )
 
-func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *httpfx.Config, *datafx.Config, error) { //nolint:lll
-	appConfig := &config.AppConfig{} //nolint:exhaustruct
+func LoadConfig(loader configfx.ConfigLoader) (*service.AppConfig, *logfx.Config, *httpfx.Config, *datafx.Config, error) { //nolint:lll
+	appConfig := &service.AppConfig{} //nolint:exhaustruct
 
 	err := loader.LoadDefaults(appConfig)
 	if err != nil {
@@ -30,7 +29,7 @@ func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config,
 	return appConfig, &appConfig.Log, &appConfig.Http, &appConfig.Data, nil
 }
 
-func RegisterMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appConfig *config.AppConfig) error {
+func RegisterHttpMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appConfig *service.AppConfig) error {
 	routes.Use(middlewares.ErrorHandlerMiddleware())
 	routes.Use(middlewares.ResolveAddressMiddleware())
 	routes.Use(middlewares.ResponseTimeMiddleware())
@@ -52,13 +51,12 @@ func main() {
 		httpfx.RegisterDependencies,
 		datafx.RegisterDependencies,
 
-		RegisterMiddlewares,
+		RegisterHttpMiddlewares,
 
-		healthcheck.RegisterRoutes,
-		openapi.RegisterRoutes,
+		healthcheck.RegisterHttpRoutes,
+		openapi.RegisterHttpRoutes,
 
-		home.RegisterIndexRoute,
-		protected.RegisterIndexRoute,
+		broadcast.RegisterHttpRoutes,
 	)
 	if err != nil {
 		panic(err)

@@ -1,4 +1,4 @@
-package home
+package service
 
 import (
 	"fmt"
@@ -6,10 +6,9 @@ import (
 
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
 	"github.com/eser/acik.io/pkg/bliss/httpfx/middlewares"
-	"github.com/eser/acik.io/pkg/service/config"
 )
 
-func RegisterIndexRoute(routes httpfx.Router, appConfig *config.AppConfig) {
+func RegisterIndexRoute(routes httpfx.Router, appConfig *AppConfig) {
 	routes.
 		Route("GET /", func(ctx *httpfx.Context) httpfx.Result {
 			message := fmt.Sprintf(

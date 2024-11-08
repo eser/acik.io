@@ -1,3 +1,3 @@
-package storage
+package main
 
 //go:generate sqlc generate

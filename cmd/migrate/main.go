@@ -11,12 +11,12 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
-	"github.com/eser/acik.io/pkg/service/config"
+	"github.com/eser/acik.io/pkg/service"
 	"github.com/pressly/goose/v3"
 )
 
-func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *datafx.Config, error) {
-	appConfig := &config.AppConfig{} //nolint:exhaustruct
+func LoadConfig(loader configfx.ConfigLoader) (*service.AppConfig, *logfx.Config, *datafx.Config, error) {
+	appConfig := &service.AppConfig{} //nolint:exhaustruct
 
 	err := loader.LoadDefaults(appConfig)
 	if err != nil {

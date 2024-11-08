@@ -35,8 +35,8 @@ const fontMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Deno 2, Next 15 and React 19 Showcase by eser.live",
-  description: "Playground app for Deno 2, Next.js 15 and React 19 features",
+  title: "JavaScript 🤝🏻 Golang Showcase by eser.live",
+  description: "Playground app for JavaScript and Golang interoperability",
 };
 
 export default function RootLayout({

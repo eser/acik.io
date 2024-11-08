@@ -11,12 +11,12 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/lib"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
-	"github.com/eser/acik.io/pkg/service/config"
-	"github.com/eser/acik.io/pkg/service/procedures"
+	"github.com/eser/acik.io/pkg/service"
+	"github.com/eser/acik.io/pkg/service/broadcast"
 )
 
-func LoadConfig(loader configfx.ConfigLoader) (*config.AppConfig, *logfx.Config, *grpcfx.Config, *datafx.Config, error) { //nolint:lll
-	appConfig := &config.AppConfig{} //nolint:exhaustruct
+func LoadConfig(loader configfx.ConfigLoader) (*service.AppConfig, *logfx.Config, *grpcfx.Config, *datafx.Config, error) { //nolint:lll
+	appConfig := &service.AppConfig{} //nolint:exhaustruct
 
 	err := loader.LoadDefaults(appConfig)
 	if err != nil {
@@ -37,7 +37,7 @@ func main() {
 		grpcfx.RegisterDependencies,
 		datafx.RegisterDependencies,
 
-		procedures.RegisterBroadcastService,
+		broadcast.RegisterGrpcService,
 	)
 	if err != nil {
 		panic(err)

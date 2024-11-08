@@ -1,7 +1,8 @@
-package procedures
+package broadcast
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/grpcfx"
@@ -11,17 +12,19 @@ import (
 type BroadcastService struct {
 	pb.UnimplementedChannelServiceServer
 	pb.UnimplementedMessageServiceServer
+
+	logger *slog.Logger
 }
 
-func RegisterBroadcastService(container di.Container, grpcService grpcfx.GrpcService) {
-	bs := NewBroadcastService()
+func RegisterGrpcService(container di.Container, grpcService grpcfx.GrpcService, logger *slog.Logger) {
+	bs := NewBroadcastService(logger)
 
 	grpcService.RegisterService(&pb.ChannelService_ServiceDesc, bs)
 	grpcService.RegisterService(&pb.MessageService_ServiceDesc, bs)
 }
 
-func NewBroadcastService() *BroadcastService {
-	return &BroadcastService{} //nolint:exhaustruct
+func NewBroadcastService(logger *slog.Logger) *BroadcastService {
+	return &BroadcastService{logger: logger} //nolint:exhaustruct
 }
 
 func (s *BroadcastService) GetById(ctx context.Context, req *pb.GetByIdRequest) (*pb.Channel, error) {
@@ -39,6 +42,11 @@ func (s *BroadcastService) List(ctx context.Context, req *pb.ListRequest) (*pb.C
 }
 
 func (s *BroadcastService) Send(ctx context.Context, req *pb.SendRequest) (*pb.SendResponse, error) {
-	// Implementation here
+	s.logger.Info(
+		"Send",
+		slog.String("channelId", req.GetChannelId()),
+		slog.Any("message", req.GetMessage()),
+	)
+
 	return nil, nil //nolint:nilnil
 }

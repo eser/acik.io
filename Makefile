@@ -21,11 +21,11 @@ init:
 
 .PHONY: dev
 dev:
-	air; if [ $$? -ne 0 ]; then go run ./cmd/http-service/; fi
+	air; if [ $$? -ne 0 ]; then go run ./cmd/grpc-service/; fi
 
-.PHONY: dev-grpc
-dev-grpc:
-	go run ./cmd/grpc-service/
+.PHONY: dev-http
+dev-http:
+	go run ./cmd/http-service/
 
 .PHONY: migrate
 migrate:
@@ -33,7 +33,7 @@ migrate:
 
 .PHONY: build
 build:
-	go build -o ./tmp/dist/http-service ./cmd/http-service/
+	go build -o ./tmp/dist/grpc-service ./cmd/grpc-service/
 
 .PHONY: generate
 generate:
@@ -45,7 +45,7 @@ clean:
 
 .PHONY: run
 run: build
-	./tmp/dist/http-service
+	./tmp/dist/grpc-service
 
 .PHONY: test-api
 test-api:
@@ -143,17 +143,17 @@ container-logs-all:
 
 .PHONY: container-logs
 container-logs:
-	docker compose --file ./ops/docker/compose.yml logs http-service
+	docker compose --file ./ops/docker/compose.yml logs grpc-service
 
 .PHONY: container-cli
 container-cli:
-	docker compose --file ./ops/docker/compose.yml exec http-service bash
+	docker compose --file ./ops/docker/compose.yml exec grpc-service bash
 
 .PHONY: container-push
 container-push:
 ifdef VERSION
-	docker build --platform=linux/amd64 -t acikyazilim.registry.cpln.io/http-service:v$(VERSION) .
-	docker push acikyazilim.registry.cpln.io/http-service:v$(VERSION)
+	docker build --platform=linux/amd64 -t acikyazilim.registry.cpln.io/grpc-service:v$(VERSION) .
+	docker push acikyazilim.registry.cpln.io/grpc-service:v$(VERSION)
 else
 	@echo "VERSION is not set"
 endif

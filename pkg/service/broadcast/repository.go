@@ -1,4 +1,4 @@
-package repositories
+package broadcast
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"errors"
 
 	"github.com/eser/acik.io/pkg/bliss/datafx"
-	"github.com/eser/acik.io/pkg/service/storage/db"
+	"github.com/eser/acik.io/pkg/service/data"
 )
 
 var ErrUserNotFound = errors.New("user not found")
 
 type UserRepository struct {
 	scope   datafx.DbExecutor
-	queries *db.Queries
+	queries *data.Queries
 }
 
 var _ datafx.Repository = (*UserRepository)(nil)
@@ -21,7 +21,7 @@ var _ datafx.Repository = (*UserRepository)(nil)
 func NewUserRepository(scope datafx.DbExecutor) UserRepository {
 	return UserRepository{
 		scope:   scope,
-		queries: db.New(scope),
+		queries: data.New(scope),
 	}
 }
 
@@ -29,7 +29,7 @@ func NewUserRepository(scope datafx.DbExecutor) UserRepository {
 // 	return r.scope
 // }
 
-func (r UserRepository) GetById(ctx context.Context, id string) (*db.User, error) {
+func (r UserRepository) GetById(ctx context.Context, id string) (*data.User, error) {
 	row, err := r.queries.GetUserById(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -42,7 +42,7 @@ func (r UserRepository) GetById(ctx context.Context, id string) (*db.User, error
 	return &row, nil
 }
 
-func (r UserRepository) GetByGithubRemoteId(ctx context.Context, githubRemoteId string) (*db.User, error) {
+func (r UserRepository) GetByGithubRemoteId(ctx context.Context, githubRemoteId string) (*data.User, error) {
 	row, err := r.queries.GetUserByGithubRemoteId(ctx, sql.NullString{String: githubRemoteId, Valid: true})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -55,7 +55,7 @@ func (r UserRepository) GetByGithubRemoteId(ctx context.Context, githubRemoteId 
 	return &row, nil
 }
 
-func (r UserRepository) List(ctx context.Context) ([]db.User, error) {
+func (r UserRepository) List(ctx context.Context) ([]data.User, error) {
 	rows, err := r.queries.ListUsers(ctx)
 	if err != nil {
 		return nil, err //nolint:wrapcheck
@@ -64,8 +64,8 @@ func (r UserRepository) List(ctx context.Context) ([]db.User, error) {
 	return rows, nil
 }
 
-func (r UserRepository) Create(ctx context.Context, user *db.User) (*db.User, error) {
-	row, err := r.queries.CreateUser(ctx, db.CreateUserParams{
+func (r UserRepository) Create(ctx context.Context, user *data.User) (*data.User, error) {
+	row, err := r.queries.CreateUser(ctx, data.CreateUserParams{
 		GithubRemoteId: user.GithubRemoteId,
 		Name:           user.Name,
 		Email:          user.Email,
@@ -77,8 +77,8 @@ func (r UserRepository) Create(ctx context.Context, user *db.User) (*db.User, er
 	return &row, nil
 }
 
-func (r UserRepository) Update(ctx context.Context, user *db.User) error {
-	result, err := r.queries.UpdateUser(ctx, db.UpdateUserParams{
+func (r UserRepository) Update(ctx context.Context, user *data.User) error {
+	result, err := r.queries.UpdateUser(ctx, data.UpdateUserParams{
 		Id:    user.Id,
 		Name:  user.Name,
 		Email: user.Email,

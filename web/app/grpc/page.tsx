@@ -3,7 +3,7 @@
 import React, { useActionState, useOptimistic } from "react";
 import { Badge, Box, Button, Flex, Heading, Kbd, Spinner, Text, TextField } from "@radix-ui/themes";
 import { sendMessageAction } from "./action.ts";
-import type { FormState } from "./types.ts";
+import type { FormState, FormStateEntry } from "./types.ts";
 
 function formatDate(date: Date): string {
   const formatted = date.toISOString();
@@ -29,7 +29,7 @@ export default function Page() {
     string
   >(state, (prevState, newMessage) => [
     ...prevState,
-    [new Date(), newMessage, true],
+    [new Date(), newMessage, null],
   ]);
 
   return (
@@ -38,27 +38,29 @@ export default function Page() {
         <Box className="~max-w-xs/4xl p-4">
           <Flex direction="column" gap="4">
             <Heading as="h1" className="~text-lg/4xl">
-              Deno 2, Next 15 and React 19 Showcase
+              JavaScript 🤝🏻 Golang
             </Heading>
             <Heading as="h2" mb="6" className="~text-base/2xl">
-              useOptimistic() Demo
+              gRPC Demo
             </Heading>
 
             <Flex direction="column" gap="2" asChild>
               <form action={action}>
                 <div>
                   {optimisticState.map(
-                    (entry: [Date, string, boolean?], _index: number) => (
+                    (entry: FormStateEntry, _index: number) => (
                       <Text as="div">
                         {/* time */}
                         <Kbd>{formatDate(entry[0])}</Kbd>
                         {/* message */}
                         <Text ml="2">{entry[1]}</Text>
                         {/* badge */}
-                        {entry[2] && (
+                        {entry[2] === null ? (
                           <Badge ml="2" variant="soft">
                             sending...
                           </Badge>
+                        ) : (
+                          <Text ml="2">{entry[2]}</Text>
                         )}
                       </Text>
                     ),

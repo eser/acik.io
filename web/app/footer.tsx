@@ -20,86 +20,34 @@ export function Footer() {
           Home
         </Link>
         <Link
-          href="/react-compiler/"
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          href="/grpc"
         >
           <Image
             aria-hidden
-            src="/window.svg"
-            alt="Window icon"
+            src="/file-text.svg"
+            alt="File icon"
             width={16}
             height={16}
           />
-          React Compiler
+          gRPC
         </Link>
         <Link
-          href="/use-transition/"
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+          href="/http"
         >
           <Image
             aria-hidden
-            src="/window.svg"
-            alt="Window icon"
+            src="/file-text.svg"
+            alt="File icon"
             width={16}
             height={16}
           />
-          useTransition()
-        </Link>
-        <Link
-          href="/use/"
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          use()
-        </Link>
-        <Link
-          href="/use-actionstate/"
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          useActionState()
-        </Link>
-        <Link
-          href="/use-optimistic/"
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          useOptimistic()
-        </Link>
-        <Link
-          href="/ppr/"
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Partial Prerendering
+          HTTP
         </Link>
         <Link
           className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://github.com/eser/deno-next-showcase"
+          href="https://github.com/eser/acik.io"
           target="_blank"
           rel="noopener noreferrer"
         >

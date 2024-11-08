@@ -3,7 +3,7 @@
 //   sqlc v1.27.0
 // source: dmls.sql
 
-package db
+package data
 
 import (
 	"context"
@@ -16,9 +16,9 @@ values ($1, $2, $3) returning id, kind, name, email, phone, github_handle, x_han
 `
 
 type CreateUserParams struct {
-	GithubRemoteId sql.NullString
-	Name           string
-	Email          sql.NullString
+	GithubRemoteId sql.NullString `json:"githubRemoteId"`
+	Name           string         `json:"name"`
+	Email          sql.NullString `json:"email"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -115,7 +115,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []User
+	items := []User{}
 	for rows.Next() {
 		var i User
 		if err := rows.Scan(
@@ -153,9 +153,9 @@ where id = $1 and deleted_at is null
 `
 
 type UpdateUserParams struct {
-	Id    string
-	Name  string
-	Email sql.NullString
+	Id    string         `json:"id"`
+	Name  string         `json:"name"`
+	Email sql.NullString `json:"email"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (sql.Result, error) {
