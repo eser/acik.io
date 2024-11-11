@@ -21,10 +21,18 @@ init:
 
 .PHONY: dev
 dev:
-	air; if [ $$? -ne 0 ]; then go run ./cmd/grpc-service/; fi
+	air
 
 .PHONY: dev-http
 dev-http:
+	air --build.bin "./tmp/http-service" --build.cmd "go build -o ./tmp/http-service ./cmd/http-service/"
+
+.PHONY: run-grpc
+run-grpc:
+	go run ./cmd/grpc-service/
+
+.PHONY: run-http
+run-http:
 	go run ./cmd/http-service/
 
 .PHONY: migrate
@@ -33,7 +41,7 @@ migrate:
 
 .PHONY: build
 build:
-	go build -o ./tmp/dist/grpc-service ./cmd/grpc-service/
+	go build -v ./...
 
 .PHONY: generate
 generate:
@@ -42,10 +50,6 @@ generate:
 .PHONY: clean
 clean:
 	go clean
-
-.PHONY: run
-run: build
-	./tmp/dist/grpc-service
 
 .PHONY: test-api
 test-api:

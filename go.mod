@@ -1,6 +1,6 @@
 module github.com/eser/acik.io
 
-go 1.23.0
+go 1.23.3
 
 require (
 	github.com/getkin/kin-openapi v0.128.0
