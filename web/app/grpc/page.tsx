@@ -3,7 +3,7 @@
 import React, { useActionState, useOptimistic } from "react";
 import { Badge, Box, Button, Flex, Heading, Kbd, Spinner, Text, TextField } from "@radix-ui/themes";
 import { sendMessageAction } from "./action.ts";
-import type { FormState, FormStateEntry } from "./types.ts";
+import { type FormState, type FormStateEntry, FormStateEntryStatus } from "./types.ts";
 
 function formatDate(date: Date): string {
   const formatted = date.toISOString();
@@ -29,7 +29,7 @@ export default function Page() {
     string
   >(state, (prevState, newMessage) => [
     ...prevState,
-    [new Date(), newMessage, null],
+    [new Date(), newMessage, FormStateEntryStatus.PENDING, null],
   ]);
 
   return (
@@ -55,13 +55,19 @@ export default function Page() {
                         {/* message */}
                         <Text ml="2">{entry[1]}</Text>
                         {/* badge */}
-                        {entry[2] === null ? (
-                          <Badge ml="2" variant="soft">
-                            sending...
-                          </Badge>
-                        ) : (
-                          <Text ml="2">{entry[2]}</Text>
-                        )}
+                        {entry[2] === FormStateEntryStatus.PENDING
+                          ? (
+                            <Badge ml="2" variant="soft">
+                              sending...
+                            </Badge>
+                          )
+                          : entry[2] === FormStateEntryStatus.ERROR
+                          ? (
+                            <Badge ml="2" variant="soft" color="red">
+                              error
+                            </Badge>
+                          )
+                          : <Text ml="2">{entry[3]!.toFixed(2)}ms</Text>}
                       </Text>
                     ),
                   )}
