@@ -18,7 +18,7 @@ func NewMetrics(metricsProvider metricsfx.MetricsProvider) *Metrics {
 			Name: "grpc_requests_total",
 			Help: "Total number of gRPC requests",
 		},
-		[]string{"method", "service", "code"},
+		[]string{"method", "code"},
 	)
 
 	requestDuration := prometheus.NewHistogramVec(
@@ -26,7 +26,7 @@ func NewMetrics(metricsProvider metricsfx.MetricsProvider) *Metrics {
 			Name: "grpc_request_duration_seconds",
 			Help: "gRPC request duration in seconds",
 		},
-		[]string{"method", "service"},
+		[]string{"method"},
 	)
 
 	metricsProvider.GetRegistry().MustRegister(requestsTotal, requestDuration)

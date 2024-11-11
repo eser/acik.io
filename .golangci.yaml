@@ -42,6 +42,7 @@ linters-settings:
           - golang.org/x/net/http/httpguts
           - google.golang.org/grpc
           - google.golang.org/grpc/reflection
+          - google.golang.org/grpc/status
           - github.com/eser/acik.io
           - github.com/oklog/ulid/v2
           - github.com/go-playground/validator/v10

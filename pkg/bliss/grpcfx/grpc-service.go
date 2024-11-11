@@ -28,8 +28,13 @@ type GrpcServiceImpl struct {
 var _ GrpcService = (*GrpcServiceImpl)(nil)
 
 func NewGrpcService(config *Config, metricsProvider metricsfx.MetricsProvider, logger *slog.Logger) *GrpcServiceImpl {
+	metrics := NewMetrics(metricsProvider)
+
 	server := grpc.NewServer(
-		grpc.UnaryInterceptor(MetricsInterceptor(metricsProvider)),
+		grpc.ChainUnaryInterceptor(
+			LoggingInterceptor(logger),
+			MetricsInterceptor(metrics),
+		),
 	)
 
 	if config.Reflection {
@@ -38,7 +43,7 @@ func NewGrpcService(config *Config, metricsProvider metricsfx.MetricsProvider, l
 
 	return &GrpcServiceImpl{
 		InnerServer:  server,
-		InnerMetrics: NewMetrics(metricsProvider),
+		InnerMetrics: metrics,
 		Config:       config,
 		logger:       logger,
 	}
