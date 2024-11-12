@@ -6,17 +6,19 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eser/acik.io/pkg/bliss"
 	"github.com/eser/acik.io/pkg/bliss/configfx"
 	"github.com/eser/acik.io/pkg/bliss/datafx"
 	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
-	"github.com/eser/acik.io/pkg/service"
 	"github.com/pressly/goose/v3"
 )
 
-func LoadConfig(loader configfx.ConfigLoader) (*service.AppConfig, *logfx.Config, *datafx.Config, error) {
-	appConfig := &service.AppConfig{} //nolint:exhaustruct
+type AppConfig bliss.BaseConfig
+
+func LoadConfig(loader configfx.ConfigLoader) (*AppConfig, *logfx.Config, *datafx.Config, error) {
+	appConfig := &AppConfig{} //nolint:exhaustruct
 
 	err := loader.LoadDefaults(appConfig)
 	if err != nil {

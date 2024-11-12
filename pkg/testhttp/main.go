@@ -1,11 +1,10 @@
-package main
+package testhttp
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/eser/acik.io/pkg/bliss/configfx"
-	"github.com/eser/acik.io/pkg/bliss/datafx"
 	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
 	"github.com/eser/acik.io/pkg/bliss/httpfx/middlewares"
@@ -14,22 +13,20 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/lib"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
-	"github.com/eser/acik.io/pkg/service"
-	"github.com/eser/acik.io/pkg/service/broadcast"
 )
 
-func LoadConfig(loader configfx.ConfigLoader) (*service.AppConfig, *logfx.Config, *httpfx.Config, *datafx.Config, error) { //nolint:lll
-	appConfig := &service.AppConfig{} //nolint:exhaustruct
+func LoadConfig(loader configfx.ConfigLoader) (*AppConfig, *logfx.Config, *httpfx.Config, error) {
+	appConfig := &AppConfig{} //nolint:exhaustruct
 
 	err := loader.LoadDefaults(appConfig)
 	if err != nil {
-		return nil, nil, nil, nil, fmt.Errorf("failed to load config: %w", err)
+		return nil, nil, nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
-	return appConfig, &appConfig.Log, &appConfig.Http, &appConfig.Data, nil
+	return appConfig, &appConfig.Log, &appConfig.Http, nil
 }
 
-func RegisterHttpMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appConfig *service.AppConfig) error {
+func RegisterHttpMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, appConfig *AppConfig) error {
 	routes.Use(middlewares.ErrorHandlerMiddleware())
 	routes.Use(middlewares.ResolveAddressMiddleware())
 	routes.Use(middlewares.ResponseTimeMiddleware())
@@ -40,7 +37,7 @@ func RegisterHttpMiddlewares(routes httpfx.Router, httpMetrics *httpfx.Metrics, 
 	return nil
 }
 
-func main() {
+func Run() error {
 	err := di.RegisterFn(
 		di.Default,
 		configfx.RegisterDependencies,
@@ -49,14 +46,13 @@ func main() {
 		logfx.RegisterDependencies,
 		metricsfx.RegisterDependencies,
 		httpfx.RegisterDependencies,
-		datafx.RegisterDependencies,
 
 		RegisterHttpMiddlewares,
 
 		healthcheck.RegisterHttpRoutes,
 		openapi.RegisterHttpRoutes,
 
-		broadcast.RegisterHttpRoutes,
+		RegisterHttpRoutes,
 	)
 	if err != nil {
 		panic(err)
@@ -85,7 +81,6 @@ func main() {
 	di.Seal(di.Default)
 
 	err = run()
-	if err != nil {
-		panic(err)
-	}
+
+	return err
 }

@@ -58,7 +58,7 @@ includes its own interpretation.
   - Install and enable [pre-commit](https://pre-commit.com/#install)
   - Install [GNU make](https://www.gnu.org/software/make/)
   - Install [protobuf](https://github.com/protocolbuffers/protobuf/releases)
-  - Install [Bruno CLI](https://docs.usebruno.com/bru-cli/overview#installation)
+  - Install [Kreya CLI](https://kreya.app/docs/cli/#installation)
   - Install [Air](https://github.com/air-verse/air#installation)
   - Install [govulncheck](https://go.googlesource.com/vuln)
   - Install [betteralign](https://github.com/dkorunic/betteralign#installation)
@@ -92,10 +92,6 @@ includes its own interpretation.
   ==> Installing dependencies for protobuf
   ==> Installing protobuf
   ...
-
-  $ deno install --global --no-lock --name bru --allow-all npm:@usebruno/cli
-  ✅ Successfully installed bru
-  ~/.deno/bin/bru
 
   $ pre-commit install
   pre-commit installed at .git/hooks/pre-commit

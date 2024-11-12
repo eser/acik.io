@@ -1,4 +1,4 @@
-package main
+package identitysvc
 
 import (
 	"context"
@@ -11,12 +11,10 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/lib"
 	"github.com/eser/acik.io/pkg/bliss/logfx"
 	"github.com/eser/acik.io/pkg/bliss/metricsfx"
-	"github.com/eser/acik.io/pkg/service"
-	"github.com/eser/acik.io/pkg/service/broadcast"
 )
 
-func LoadConfig(loader configfx.ConfigLoader) (*service.AppConfig, *logfx.Config, *grpcfx.Config, *datafx.Config, error) { //nolint:lll
-	appConfig := &service.AppConfig{} //nolint:exhaustruct
+func LoadConfig(loader configfx.ConfigLoader) (*AppConfig, *logfx.Config, *grpcfx.Config, *datafx.Config, error) { //nolint:lll
+	appConfig := &AppConfig{} //nolint:exhaustruct
 
 	err := loader.LoadDefaults(appConfig)
 	if err != nil {
@@ -26,7 +24,7 @@ func LoadConfig(loader configfx.ConfigLoader) (*service.AppConfig, *logfx.Config
 	return appConfig, &appConfig.Log, &appConfig.Grpc, &appConfig.Data, nil
 }
 
-func main() {
+func Run() error {
 	err := di.RegisterFn(
 		di.Default,
 		configfx.RegisterDependencies,
@@ -37,7 +35,7 @@ func main() {
 		grpcfx.RegisterDependencies,
 		datafx.RegisterDependencies,
 
-		broadcast.RegisterGrpcService,
+		RegisterGrpcService,
 	)
 	if err != nil {
 		panic(err)
@@ -66,7 +64,6 @@ func main() {
 	di.Seal(di.Default)
 
 	err = run()
-	if err != nil {
-		panic(err)
-	}
+
+	return err
 }

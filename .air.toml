@@ -4,8 +4,8 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./tmp/grpc-service"
-  cmd = "go build -o ./tmp/grpc-service ./cmd/grpc-service/"
+  bin = "./tmp/identitysvc"
+  cmd = "go build -o ./tmp/identitysvc ./cmd/identitysvc/"
   delay = 1000
   exclude_dir = ["tmp", "vendor", "testdata"]
   exclude_file = []

@@ -9,7 +9,6 @@ init:
 	command -v pre-commit >/dev/null || brew install pre-commit
 	command -v make >/dev/null || brew install make
 	command -v protoc >/dev/null || brew install protobuf
-	command -v bru >/dev/null || deno install --global --no-lock --name bru --allow-all npm:@usebruno/cli
 	[ -f .git/hooks/pre-commit ] || pre-commit install
 	command -v air >/dev/null || go install github.com/air-verse/air@latest
 	command -v govulncheck >/dev/null || go install golang.org/x/vuln/cmd/govulncheck@latest
@@ -19,21 +18,37 @@ init:
 	command -v protoc-gen-go >/dev/null || go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	command -v protoc-gen-go-grpc >/dev/null || go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-.PHONY: dev
-dev:
-	air
+.PHONY: dev-identitysvc
+dev-identitysvc:
+	air --build.bin "./tmp/identitysvc" --build.cmd "go build -o ./tmp/identitysvc ./cmd/identitysvc/"
 
-.PHONY: dev-http
-dev-http:
-	air --build.bin "./tmp/http-service" --build.cmd "go build -o ./tmp/http-service ./cmd/http-service/"
+.PHONY: dev-broadcastsvc
+dev-broadcastsvc:
+	air --build.bin "./tmp/broadcastsvc" --build.cmd "go build -o ./tmp/broadcastsvc ./cmd/broadcastsvc/"
 
-.PHONY: run-grpc
-run-grpc:
-	go run ./cmd/grpc-service/
+.PHONY: dev-broadcasthttp
+dev-broadcasthttp:
+	air --build.bin "./tmp/broadcasthttp" --build.cmd "go build -o ./tmp/broadcasthttp ./cmd/broadcasthttp/"
 
-.PHONY: run-http
-run-http:
-	go run ./cmd/http-service/
+.PHONY: dev-testhttp
+dev-testhttp:
+	air --build.bin "./tmp/testhttp" --build.cmd "go build -o ./tmp/testhttp ./cmd/testhttp/"
+
+.PHONY: run-identitysvc
+run-identitysvc:
+	go run ./cmd/identitysvc/
+
+.PHONY: run-broadcastsvc
+run-broadcastsvc:
+	go run ./cmd/broadcastsvc/
+
+.PHONY: run-broadcasthttp
+run-broadcasthttp:
+	go run ./cmd/broadcasthttp/
+
+.PHONY: run-testhttp
+run-testhttp:
+	go run ./cmd/testhttp/
 
 .PHONY: migrate
 migrate:
@@ -54,7 +69,8 @@ clean:
 .PHONY: test-api
 test-api:
 	cd ./ops/api-tests/ && \
-	bru run ./ --env development && \
+	kreyac environment set-active development --disable-telemetry && \
+	kreyac collection invoke '**' --disable-telemetry && \
 	cd ../../
 
 .PHONY: test
@@ -141,23 +157,19 @@ container-dev:
 container-ps:
 	docker compose --file ./ops/docker/compose.yml ps --all
 
-.PHONY: container-logs-all
-container-logs-all:
-	docker compose --file ./ops/docker/compose.yml logs
-
 .PHONY: container-logs
 container-logs:
-	docker compose --file ./ops/docker/compose.yml logs grpc-service
+	docker compose --file ./ops/docker/compose.yml logs
 
 .PHONY: container-cli
 container-cli:
-	docker compose --file ./ops/docker/compose.yml exec grpc-service bash
+	docker compose --file ./ops/docker/compose.yml exec identitysvc bash
 
 .PHONY: container-push
 container-push:
 ifdef VERSION
-	docker build --platform=linux/amd64 -t acikyazilim.registry.cpln.io/grpc-service:v$(VERSION) .
-	docker push acikyazilim.registry.cpln.io/grpc-service:v$(VERSION)
+	docker build --platform=linux/amd64 -t acikyazilim.registry.cpln.io/identitysvc:v$(VERSION) .
+	docker push acikyazilim.registry.cpln.io/identitysvc:v$(VERSION)
 else
 	@echo "VERSION is not set"
 endif

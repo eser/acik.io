@@ -1,4 +1,4 @@
-package broadcast
+package broadcasthttp
 
 import (
 	"encoding/json"
@@ -7,28 +7,10 @@ import (
 	"net/http"
 
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
-	"github.com/eser/acik.io/pkg/bliss/httpfx/middlewares"
 	"github.com/eser/acik.io/pkg/proto/broadcast"
-	"github.com/eser/acik.io/pkg/service"
 )
 
-func RegisterHttpRoutes(routes httpfx.Router, appConfig *service.AppConfig, logger *slog.Logger) {
-	routes.
-		Route("GET /protected", middlewares.AuthMiddleware(), func(ctx *httpfx.Context) httpfx.Result {
-			// message := fmt.Sprintf("Hello from %s! this endpoint is protected!", appConfig.AppName)
-
-			// return ctx.Results.PlainText(message)
-			v := broadcast.Channel{
-				Id:   "01JBREQEH27498TQRYBWA3GP81",
-				Name: "eser.live",
-			}
-
-			return ctx.Results.Json(v.String())
-		}).
-		HasSummary("Protected page").
-		HasDescription("A page protected with JWT auth.").
-		HasResponse(http.StatusOK)
-
+func RegisterHttpRoutes(routes httpfx.Router, appConfig *AppConfig, logger *slog.Logger) {
 	routes.
 		Route("POST /send", func(ctx *httpfx.Context) httpfx.Result {
 			body, err := io.ReadAll(ctx.Request.Body)

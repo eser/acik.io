@@ -2,14 +2,14 @@ version: "2"
 
 sql:
   - engine: "postgresql"
-    queries: "pkg/service/dmls.sql"
-    schema: "pkg/service/ddls.sql"
+    queries: "pkg/identitysvc/dmls.sql"
+    schema: "pkg/identitysvc/ddls.sql"
     rules:
       - sqlc/db-prepare
     gen:
       go:
         package: "data"
-        out: "pkg/service/data"
+        out: "pkg/identitysvc/data"
         sql_package: "database/sql"
         initialisms: []
         emit_interface: true

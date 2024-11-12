@@ -1,4 +1,4 @@
-package broadcast
+package identitysvc
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"errors"
 
 	"github.com/eser/acik.io/pkg/bliss/datafx"
-	"github.com/eser/acik.io/pkg/service/data"
+	"github.com/eser/acik.io/pkg/identitysvc/data"
 )
 
 var ErrUserNotFound = errors.New("user not found")

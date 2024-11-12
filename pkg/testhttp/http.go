@@ -1,4 +1,4 @@
-package service
+package testhttp
 
 import (
 	"fmt"
@@ -8,7 +8,20 @@ import (
 	"github.com/eser/acik.io/pkg/bliss/httpfx/middlewares"
 )
 
-func RegisterIndexRoute(routes httpfx.Router, appConfig *AppConfig) {
+func RegisterHttpRoutes(routes httpfx.Router, appConfig *AppConfig) {
+	routes.
+		Route("GET /protected", middlewares.AuthMiddleware(), func(ctx *httpfx.Context) httpfx.Result {
+			v := []string{
+				"1234",
+				"eser.live",
+			}
+
+			return ctx.Results.Json(v)
+		}).
+		HasSummary("Protected page").
+		HasDescription("A page protected with JWT auth.").
+		HasResponse(http.StatusOK)
+
 	routes.
 		Route("GET /", func(ctx *httpfx.Context) httpfx.Result {
 			message := fmt.Sprintf(
