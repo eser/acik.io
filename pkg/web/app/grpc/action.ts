@@ -1,7 +1,7 @@
 "use server";
 
 import * as grpc from "@grpc/grpc-js";
-import * as broadcast from "../../proto/broadcast/broadcast.ts";
+import * as broadcast from "../../../proto-ts/broadcast/broadcast.ts";
 import { type FormState, type FormStateEntry, FormStateEntryStatus } from "./types.ts";
 
 const sendMessage = (message: string, retryCount = 0) => {

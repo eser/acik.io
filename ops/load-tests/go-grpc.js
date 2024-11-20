@@ -1,7 +1,6 @@
-import grpc from 'k6/net/grpc'
-import exec from 'k6/execution';
-import { check } from 'k6'
-
+import grpc from "k6/net/grpc";
+import exec from "k6/execution";
+import { check } from "k6";
 
 export const options = {
   // A number specifying the number of VUs to run concurrently.
@@ -55,12 +54,12 @@ export const options = {
 // about authoring k6 scripts.
 //
 
-const client = new grpc.Client()
-client.load(['definitions'], 'broadcast.proto')
+const client = new grpc.Client();
+client.load(["definitions"], "broadcast.proto");
 
 export default function () {
   if (exec.vu.iterationInInstance == 0) {
-    client.connect('localhost:9090', { plaintext: true })
+    client.connect("localhost:9090", { plaintext: true });
   }
 
   const data = {
@@ -70,10 +69,10 @@ export default function () {
     },
   };
 
-  const response = client.invoke('broadcast.MessageService/Send', data)
+  const response = client.invoke("broadcast.MessageService/Send", data);
   check(response, {
-    'status is OK': (r) => r && r.status === grpc.StatusOK,
-  })
+    "status is OK": (r) => r && r.status === grpc.StatusOK,
+  });
 
   //client.close()
 }

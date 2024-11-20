@@ -1,8 +1,10 @@
 {
   "exclude": [
-    "**/web/node_modules/*",
-    "**/web/.next/*",
-    "**/web/proto/*"
+    "**/node_modules/*",
+    "**/.next/*",
+    "**/pkg/proto-go/*",
+    "**/pkg/proto-ts/*",
+    "**/tmp/*"
   ],
   "lint": {
     "rules": {

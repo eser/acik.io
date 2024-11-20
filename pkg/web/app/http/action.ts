@@ -11,8 +11,8 @@ const sendMessage = async (message: string) => {
     body: JSON.stringify({
       channelId: "2",
       message: {
-        body: message
-      }
+        body: message,
+      },
     }),
   });
 };

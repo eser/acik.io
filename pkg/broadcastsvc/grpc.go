@@ -6,7 +6,7 @@ import (
 
 	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/grpcfx"
-	pb "github.com/eser/acik.io/pkg/proto/broadcast"
+	pb "github.com/eser/acik.io/pkg/proto-go/broadcast"
 )
 
 type BroadcastService struct {

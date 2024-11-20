@@ -11,25 +11,23 @@ import (
 
 var ErrUserNotFound = errors.New("user not found")
 
-type UserRepository struct {
+type UserService struct {
 	scope   datafx.DbExecutor
 	queries *data.Queries
 }
 
-var _ datafx.Repository = (*UserRepository)(nil)
-
-func NewUserRepository(scope datafx.DbExecutor) UserRepository {
-	return UserRepository{
+func NewUserService(scope datafx.DbExecutor) UserService {
+	return UserService{
 		scope:   scope,
 		queries: data.New(scope),
 	}
 }
 
-// func (r UserRepository) DbScope() datafx.DbExecutor { //nolint:ireturn
+// func (r UserService) DbScope() datafx.DbExecutor { //nolint:ireturn
 // 	return r.scope
 // }
 
-func (r UserRepository) GetById(ctx context.Context, id string) (*data.User, error) {
+func (r UserService) GetById(ctx context.Context, id string) (*data.User, error) {
 	row, err := r.queries.GetUserById(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -42,7 +40,7 @@ func (r UserRepository) GetById(ctx context.Context, id string) (*data.User, err
 	return &row, nil
 }
 
-func (r UserRepository) GetByGithubRemoteId(ctx context.Context, githubRemoteId string) (*data.User, error) {
+func (r UserService) GetByGithubRemoteId(ctx context.Context, githubRemoteId string) (*data.User, error) {
 	row, err := r.queries.GetUserByGithubRemoteId(ctx, sql.NullString{String: githubRemoteId, Valid: true})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -55,7 +53,7 @@ func (r UserRepository) GetByGithubRemoteId(ctx context.Context, githubRemoteId 
 	return &row, nil
 }
 
-func (r UserRepository) List(ctx context.Context) ([]data.User, error) {
+func (r UserService) List(ctx context.Context) ([]data.User, error) {
 	rows, err := r.queries.ListUsers(ctx)
 	if err != nil {
 		return nil, err //nolint:wrapcheck
@@ -64,7 +62,7 @@ func (r UserRepository) List(ctx context.Context) ([]data.User, error) {
 	return rows, nil
 }
 
-func (r UserRepository) Create(ctx context.Context, user *data.User) (*data.User, error) {
+func (r UserService) Create(ctx context.Context, user *data.User) (*data.User, error) {
 	row, err := r.queries.CreateUser(ctx, data.CreateUserParams{
 		GithubRemoteId: user.GithubRemoteId,
 		Name:           user.Name,
@@ -77,7 +75,7 @@ func (r UserRepository) Create(ctx context.Context, user *data.User) (*data.User
 	return &row, nil
 }
 
-func (r UserRepository) Update(ctx context.Context, user *data.User) error {
+func (r UserService) Update(ctx context.Context, user *data.User) error {
 	result, err := r.queries.UpdateUser(ctx, data.UpdateUserParams{
 		Id:    user.Id,
 		Name:  user.Name,
@@ -99,7 +97,25 @@ func (r UserRepository) Update(ctx context.Context, user *data.User) error {
 	return nil
 }
 
-func (r UserRepository) SoftDelete(ctx context.Context, id string) error {
+func (r UserService) SoftDelete(ctx context.Context, id string) error {
+	result, err := r.queries.DeleteUser(ctx, id)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	if rowsAffected == 0 {
+		return ErrUserNotFound
+	}
+
+	return nil
+}
+
+func (r UserService) ComplexTest(ctx context.Context, id string) error {
 	result, err := r.queries.DeleteUser(ctx, id)
 	if err != nil {
 		return err //nolint:wrapcheck

@@ -182,12 +182,12 @@ generate-proto:
 	    current_proto="$$(basename $$f)"; \
 	    echo "Generating stubs for $$current_proto"; \
 			\
-			protoc --plugin=./web/node_modules/.bin/protoc-gen-ts_proto \
+			protoc --plugin=./pkg/web/node_modules/.bin/protoc-gen-ts_proto \
 				--proto_path=./specs/proto/ \
-				--ts_proto_out=./web/proto/ \
+				--ts_proto_out=./pkg/proto-ts/ \
 				--ts_proto_opt="context=true,lowerCaseServiceMethods=true,outputServices=grpc-js,removeEnumPrefix=false,snakeToCamel=true,useReadonlyTypes=true,comments=false,useNullAsOptional=true" \
-				--go_out=./pkg/proto/ --go_opt=paths=source_relative \
-				--go-grpc_out=./pkg/proto/ --go-grpc_opt=paths=source_relative \
+				--go_out=./pkg/proto-go/ --go_opt=paths=source_relative \
+				--go-grpc_out=./pkg/proto-go/ --go-grpc_opt=paths=source_relative \
 				"./specs/proto/$$current_proto/$$current_proto.proto"; \
 	  done \
 	}

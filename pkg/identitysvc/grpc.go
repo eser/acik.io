@@ -6,7 +6,7 @@ import (
 
 	"github.com/eser/acik.io/pkg/bliss/di"
 	"github.com/eser/acik.io/pkg/bliss/grpcfx"
-	pb "github.com/eser/acik.io/pkg/proto/broadcast"
+	pb "github.com/eser/acik.io/pkg/proto-go/broadcast"
 )
 
 type BroadcastService struct {
@@ -28,9 +28,23 @@ func NewBroadcastService(logger *slog.Logger) *BroadcastService {
 }
 
 func (s *BroadcastService) GetById(ctx context.Context, req *pb.GetByIdRequest) (*pb.Channel, error) {
+	// uow, err := dbConn.CreateScope()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer uow.Close()
+
+	// scopeCtx := uow.Context()
+	// channelRepo := NewChannelRepository(uow.Scope())
+
+	// channelRecord, err := channelRepo.GetById(scopeCtx, req.GetId())
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	channel := &pb.Channel{
-		Id:   "123",
-		Name: "Test Channel",
+		Id:   "123",          // channelRecord.Id,
+		Name: "Test Channel", // channelRecord.Name,
 	}
 
 	return channel, nil

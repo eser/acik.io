@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/eser/acik.io/pkg/bliss/httpfx"
-	"github.com/eser/acik.io/pkg/proto/broadcast"
+	"github.com/eser/acik.io/pkg/proto-go/broadcast"
 )
 
 func RegisterHttpRoutes(routes httpfx.Router, appConfig *AppConfig, logger *slog.Logger) {

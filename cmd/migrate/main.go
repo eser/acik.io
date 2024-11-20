@@ -55,7 +55,7 @@ func main() {
 			command := allArgs[0]
 			args := allArgs[1:]
 
-			database := dataProvider.GetDefault()
+			database := dataProvider.GetDefault().Connection
 
 			if database == nil {
 				return errors.New("database is not initialized") //nolint:err113

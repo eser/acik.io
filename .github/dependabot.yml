@@ -32,7 +32,7 @@ updates:
       - "dependencies"
 
   - package-ecosystem: "npm"
-    directory: "/web/"
+    directory: "/pkg/web/"
     schedule:
       interval: "weekly"
     commit-message:

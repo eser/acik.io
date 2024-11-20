@@ -45,6 +45,21 @@
     "*.mdoc": "markdown",
     "*.mdx": "markdown"
   },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/tmp": true,
+    "**/.next": true,
+    ".vscode/extensions.json": true,
+    ".vscode/tailwind.json": true,
+    ".adr-dir": true,
+    ".air.toml": true,
+    ".editorconfig": true,
+    ".gitattributes": true,
+    "deno.json": true,
+    "go.sum": true,
+    "LICENSE": true
+  },
+  "redhat.telemetry.enabled": false,
   "editor.defaultFormatter": "denoland.vscode-deno",
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": "./.github/workflows/*.yml"

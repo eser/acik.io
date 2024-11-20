@@ -25,7 +25,7 @@ repos:
         args: ["--autofix", "--no-ensure-ascii", "--no-sort-keys"]
       - id: trailing-whitespace
   - repo: https://github.com/crate-ci/typos
-    rev: v1.27.0
+    rev: v1.27.3
     hooks:
       - id: typos
         verbose: true
@@ -43,7 +43,7 @@ repos:
         stages: [commit-msg]
         args: []
   - repo: https://github.com/golangci/golangci-lint
-    rev: v1.61.0
+    rev: v1.62.0
     hooks:
       - id: golangci-lint
   - repo: local
