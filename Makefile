@@ -184,7 +184,7 @@ generate-proto:
 			\
 			protoc --plugin=./pkg/web/node_modules/.bin/protoc-gen-ts_proto \
 				--proto_path=./specs/proto/ \
-				--ts_proto_out=./pkg/proto-ts/ \
+				--ts_proto_out=./pkg/web/proto-ts/ \
 				--ts_proto_opt="context=true,lowerCaseServiceMethods=true,outputServices=grpc-js,removeEnumPrefix=false,snakeToCamel=true,useReadonlyTypes=true,comments=false,useNullAsOptional=true" \
 				--go_out=./pkg/proto-go/ --go_opt=paths=source_relative \
 				--go-grpc_out=./pkg/proto-go/ --go-grpc_opt=paths=source_relative \
