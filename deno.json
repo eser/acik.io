@@ -1,0 +1,19 @@
+{
+  "exclude": [
+    "**/node_modules/*",
+    "**/.next/*",
+    "**/pkg/proto-go/*",
+    "**/pkg/proto-ts/*",
+    "**/tmp/*"
+  ],
+  "lint": {
+    "rules": {
+      "tags": [
+        "recommended"
+      ]
+    }
+  },
+  "fmt": {
+    "lineWidth": 120
+  }
+}

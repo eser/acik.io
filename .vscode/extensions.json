@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "chdsbd.github-code-owners",
+    "denoland.vscode-deno",
+    "EditorConfig.EditorConfig",
+    "github.vscode-github-actions",
+    "golang.go",
+    "redhat.vscode-yaml",
+    "ryanluker.vscode-coverage-gutters",
+    "unifiedjs.vscode-mdx"
+  ]
+}
