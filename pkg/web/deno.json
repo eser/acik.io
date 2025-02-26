@@ -7,8 +7,7 @@
   ],
   "exclude": [
     "**/node_modules/*",
-    "**/.next/*",
-    "**/proto-ts/*"
+    "**/.next/*"
   ],
   "lint": {
     "rules": {

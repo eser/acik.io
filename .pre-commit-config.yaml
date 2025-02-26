@@ -42,10 +42,6 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v1.62.2
-    hooks:
-      - id: golangci-lint
   - repo: local
     hooks:
       - id: checks
@@ -68,14 +64,7 @@ repos:
             README.md|
             docs/README.md|
             ops/docker/Dockerfile|
-            ops/docker/resources/fluentd/Dockerfile|
-            pkg/bliss/configfx/README.md|
-            pkg/bliss/datafx/README.md|
-            pkg/bliss/httpfx/README.md|
-            pkg/bliss/lib/README.md|
-            pkg/bliss/logfx/README.md|
-            pkg/bliss/results/README.md|
-            pkg/bliss/README.md|
+            ops/docker/resources/fluentd/Dockerfile
           )$
       - id: run-tests
         name: run tests

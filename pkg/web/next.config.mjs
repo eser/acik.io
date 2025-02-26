@@ -6,7 +6,7 @@ const nextConfig = {
   experimental: {
     reactCompiler: { compilationMode: "all" },
     // reactCompiler: false,
-    ppr: true, // 'incremental',
+    // ppr: true, // 'incremental',
   },
 };
 

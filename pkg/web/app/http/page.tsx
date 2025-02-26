@@ -48,8 +48,8 @@ export default function Page() {
               <form action={action}>
                 <div>
                   {optimisticState.map(
-                    (entry: FormStateEntry, _index: number) => (
-                      <Text as="div">
+                    (entry: FormStateEntry, index: number) => (
+                      <Text key={index} as="div">
                         {/* time */}
                         <Kbd>{formatDate(entry[0])}</Kbd>
                         {/* message */}

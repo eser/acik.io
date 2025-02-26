@@ -2,14 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch identitysvc",
-      "type": "go",
-      "request": "launch",
-      "mode": "auto",
-      "cwd": "${workspaceFolder}",
-      "program": "cmd/identitysvc/"
-    },
-    {
       "name": "Launch http-webclient",
       "type": "node-terminal",
       "request": "launch",

@@ -21,16 +21,6 @@ updates:
     labels:
       - "dependencies"
 
-  - package-ecosystem: "gomod"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "deps(gomod): "
-      include: "scope"
-    labels:
-      - "dependencies"
-
   - package-ecosystem: "npm"
     directory: "/pkg/web/"
     schedule:

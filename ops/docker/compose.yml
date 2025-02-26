@@ -1,7 +1,7 @@
 name: development
 
 services:
-  identitysvc:
+  web:
     tty: true
     stdin_open: true
     restart: unless-stopped
@@ -34,44 +34,7 @@ services:
       options:
         fluentd-address: localhost:24224
         fluentd-async-connect: "true"
-        tag: identitysvc
-
-  postgres:
-    image: postgres:16-bookworm
-    restart: unless-stopped
-    environment:
-      POSTGRES_PASSWORD: s3cr3t
-    healthcheck:
-      test: ["CMD-SHELL", "psql -U 'postgres' -c '\\q'"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - ./resources/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - acik-io-network
-    ports:
-      - 5432:5432
-    depends_on:
-      fluentd:
-        condition: service_healthy
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        fluentd-async-connect: "true"
-        tag: postgres
-
-  prometheus:
-    image: prom/prometheus:latest
-    configs:
-      - source: prometheus-config
-        target: /etc/prometheus/prometheus.yml
-    networks:
-      - acik-io-network
-    ports:
-      - 9090:9090
+        tag: web
 
   fluentd:
     build:

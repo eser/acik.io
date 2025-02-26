@@ -57,14 +57,11 @@ includes its own interpretation.
   - Install [Deno](https://docs.deno.com/runtime/getting_started/installation/)
   - Install and enable [pre-commit](https://pre-commit.com/#install)
   - Install [GNU make](https://www.gnu.org/software/make/)
-  - Install [protobuf](https://github.com/protocolbuffers/protobuf/releases)
   - Install [Kreya CLI](https://kreya.app/docs/cli/#installation)
   - Install [Air](https://github.com/air-verse/air#installation)
   - Install [govulncheck](https://go.googlesource.com/vuln)
   - Install [betteralign](https://github.com/dkorunic/betteralign#installation)
   - Install [gcov2lcov](https://github.com/jandelgado/gcov2lcov#installation)
-  - Install [protoc-gen-go](https://github.com/protocolbuffers/protobuf-go)
-  - Install [protoc-gen-go-grpc](https://github.com/grpc/grpc-go#installation)
 
   ```bash
   $ curl -fsSL https://deno.land/install.sh | sh
@@ -86,13 +83,6 @@ includes its own interpretation.
   ==> Installing make
   ...
 
-  $ brew install protobuf
-  ==> Fetching dependencies for protobuf
-  ==> Fetching protobuf
-  ==> Installing dependencies for protobuf
-  ==> Installing protobuf
-  ...
-
   $ pre-commit install
   pre-commit installed at .git/hooks/pre-commit
 
@@ -107,12 +97,6 @@ includes its own interpretation.
 
   $ go install github.com/jandelgado/gcov2lcov@latest
   go: downloading github.com/jandelgado/gcov2lcov v0.0.0
-
-  $ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-  go: downloading google.golang.org/protobuf/cmd/protoc-gen-go v0.0.0
-
-  $ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-  go: downloading google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0
   ```
 
 - 3️⃣ (Optional) Ensure that you can access private dependencies

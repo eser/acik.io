@@ -50,8 +50,8 @@ jobs:
           - ubuntu-latest
           # - windows-latest
           # - macOS-latest
-        golang-version:
-          - 1.23.3
+        deno-version:
+          - v2.x
 
     steps:
       - name: Checkout repository
@@ -59,30 +59,15 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Setup Golang ${{ matrix.golang-version }}
-        uses: actions/setup-go@v5
+      - name: Setup Deno ${{ matrix.deno-version }}
+        uses: denoland/setup-deno@v2
         with:
-          go-version: ${{ matrix.golang-version }}
-          cache: true
-          cache-dependency-path: go.sum
+          deno-version: ${{ matrix.deno-version }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
-      - name: Setup govulncheck
-        run: go install golang.org/x/vuln/cmd/govulncheck@latest
-
-      - name: Setup betteralign
-        run: go install github.com/dkorunic/betteralign/cmd/betteralign@latest
-
-      - name: Setup gcov2lcov
-        run: go install github.com/jandelgado/gcov2lcov@latest
-
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
-
-      - name: Build
-        working-directory: ./
-        run: go build -v ./...
