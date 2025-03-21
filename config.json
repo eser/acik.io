@@ -1,0 +1,13 @@
+{
+  "name": "sample",
+  "features": {
+    "dummy": true
+  },
+  "data": {
+    "sources": {
+      "default": {
+        "dsn": "postgres://postgres:s3cr3t@localhost:5432/postgres?sslmode=disable"
+      }
+    }
+  }
+}

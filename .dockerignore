@@ -1,0 +1,11 @@
+.github/*
+.vscode/*
+tmp/*
+.dockerignore
+.editorconfig
+.gitattributes
+.gitignore
+.pre-commit-config.yaml
+.tool-versions
+LICENSE
+README.md
