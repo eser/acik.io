@@ -1,16 +1,16 @@
-package sample
+package api
 
 import (
 	"context"
 	"log/slog"
 
+	"github.com/eser/acik.io/pkg/api/adapters/grpc/generated"
+	"github.com/eser/acik.io/pkg/api/adapters/storage"
+	"github.com/eser/acik.io/pkg/api/business/channels"
 	"github.com/eser/ajan/datafx"
 	"github.com/eser/ajan/di"
 	"github.com/eser/ajan/grpcfx"
 	"github.com/eser/ajan/logfx"
-	"github.com/eser/go-service/pkg/sample/adapters/grpc/generated"
-	"github.com/eser/go-service/pkg/sample/adapters/storage"
-	"github.com/eser/go-service/pkg/sample/business/channels"
 )
 
 type BroadcastService struct {

@@ -28,13 +28,13 @@ requirements grow.
 
 This project follows hexagonal architecture principles, also known as ports and adapters pattern:
 
-### Business Logic (`pkg/sample/business/`)
+### Business Logic (`pkg/api/business/`)
 - Contains domain entities and business rules
 - Defines interfaces (ports) that the outside world must implement
 - No external dependencies, pure business logic
-- Example: `channels.Service` interface in `pkg/sample/business/channels/service.go`
+- Example: `channels.Service` interface in `pkg/api/business/channels/service.go`
 
-### Adapters (`pkg/sample/adapters/`)
+### Adapters (`pkg/api/adapters/`)
 - Implements interfaces defined by the business logic
 - Handles external concerns (HTTP, GRPC, database, etc.)
 - Organized by technology/concern:
@@ -53,7 +53,7 @@ This project follows hexagonal architecture principles, also known as ports and 
 │   ├── manage/              # Manages codebase and app-related resources
 │   └── serve/               # Main service entry point
 ├── pkg/
-│   └── sample/              # Our application code
+│   └── api/                 # Our application code
 │       ├── adapters/        # Implementation of ports (adapters)
 │       │   ├── appcontext/  # Application context and configuration
 │       │   ├── http/        # HTTP server and handlers
@@ -199,7 +199,7 @@ that can be configured in `.env` file.
 $ make run
 02:27:53.026 INFO adding datasource connection {"name":"default","dialect":"postgres"}
 02:27:53.563 INFO successfully added datasource connection {"name":"default"}
-02:27:53.563 INFO Starting service {"name":"sample","environment":"development","features":{"Dummy":true}}
+02:27:53.563 INFO Starting service {"name":"api","environment":"development","features":{"Dummy":true}}
 02:27:53.564 INFO HttpService is starting... {"addr":":8080"}
 ```
 

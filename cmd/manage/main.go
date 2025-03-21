@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/eser/go-service/cmd/manage/subcommands"
+	"github.com/eser/acik.io/cmd/manage/subcommands"
 	"github.com/spf13/cobra"
 )
 

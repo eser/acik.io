@@ -60,11 +60,11 @@ clean: ## Cleans the entire codebase.
 	go clean
 
 .PHONY: dev
-dev: ## Runs the sample service in development mode.
+dev: ## Runs the service in development mode.
 	go tool air --build.bin "./tmp/serve" --build.cmd "go build -o ./tmp/serve ./cmd/serve/"
 
 .PHONY: run
-run: ## Runs the sample service.
+run: ## Runs the service.
 	go run ./cmd/serve/
 
 .PHONY: test
@@ -122,52 +122,39 @@ postgres-stop: ## Stops the postgres container.
 
 .PHONY: container-start
 container-start: ## Starts the container.
-	docker compose --file ./ops/docker/compose.yml up --detach
+	docker compose --file ./ops/docker/compose.yml up --detach api
 
 .PHONY: container-rebuild
 container-rebuild: ## Rebuilds the container.
-	docker compose --file ./ops/docker/compose.yml up --detach --build
+	docker compose --file ./ops/docker/compose.yml up --detach --build api
 
 .PHONY: container-restart
 container-restart: ## Restarts the container.
-	docker compose --file ./ops/docker/compose.yml restart
+	docker compose --file ./ops/docker/compose.yml restart api
 
 .PHONY: container-stop
 container-stop: ## Stops the container.
-	docker compose --file ./ops/docker/compose.yml stop
+	docker compose --file ./ops/docker/compose.yml stop api
 
 .PHONY: container-destroy
 container-destroy: ## Destroys the container.
-	docker compose --file ./ops/docker/compose.yml down
+	docker compose --file ./ops/docker/compose.yml down api
 
 .PHONY: container-update
 container-update: ## Updates the container.
-	docker compose --file ./ops/docker/compose.yml pull
+	docker compose --file ./ops/docker/compose.yml pull api
 
 .PHONY: container-dev
 container-dev: ## Watches the container.
-	docker compose --file ./ops/docker/compose.yml watch
-
-.PHONY: container-ps
-container-ps: ## Lists all containers.
-	docker compose --file ./ops/docker/compose.yml ps --all
+	docker compose --file ./ops/docker/compose.yml watch api
 
 .PHONY: container-logs
 container-logs: ## Shows the logs of the container.
-	docker compose --file ./ops/docker/compose.yml logs
+	docker compose --file ./ops/docker/compose.yml logs api
 
 .PHONY: container-cli
 container-cli: ## Opens a shell in the container.
-	docker compose --file ./ops/docker/compose.yml exec sample bash
-
-.PHONY: container-push
-container-push: ## Pushes the container to the registry.
-ifdef VERSION
-	docker build --platform=linux/amd64 -t acikyazilim.registry.cpln.io/sample:v$(VERSION) .
-	docker push acikyazilim.registry.cpln.io/sample:v$(VERSION)
-else
-	@echo "VERSION is not set"
-endif
+	docker compose --file ./ops/docker/compose.yml exec api bash
 
 .PHONY: generate-proto
 generate-proto: ## Generates the proto stubs.

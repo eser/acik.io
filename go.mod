@@ -1,4 +1,4 @@
-module github.com/eser/go-service
+module github.com/eser/acik.io
 
 go 1.24.1
 

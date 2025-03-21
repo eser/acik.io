@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/eser/go-service/pkg/sample/adapters/appcontext"
-	"github.com/eser/go-service/pkg/sample/adapters/http"
+	"github.com/eser/acik.io/pkg/api/adapters/appcontext"
+	"github.com/eser/acik.io/pkg/api/adapters/http"
 )
 
 func main() {

@@ -17,9 +17,9 @@ sql:
       - sqlc/db-prepare
     codegen:
       - plugin: golang
-        out: "pkg/sample"
+        out: "pkg/api"
         options:
-          module: "github.com/eser/go-service/pkg/sample"
+          module: "github.com/eser/acik.io/pkg/api"
           sql_package: "database/sql"
           initialisms: []
           emit_empty_slices: true

@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/eser/go-service/pkg/sample/business/channels"
+	"github.com/eser/acik.io/pkg/api/business/channels"
 )
 
 const createChannel = `-- name: CreateChannel :one

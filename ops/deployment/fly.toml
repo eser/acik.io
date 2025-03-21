@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for go-service on 2024-10-06T12:32:31+03:00
+# fly.toml app configuration file generated for api on 2024-10-06T12:32:31+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "go-service"
+app = "api"
 
 [build]
 build-target = "runner"

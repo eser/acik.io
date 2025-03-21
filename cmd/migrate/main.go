@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/eser/go-service/pkg/sample/adapters/appcontext"
+	"github.com/eser/acik.io/pkg/api/adapters/appcontext"
 	"github.com/pressly/goose/v3"
 )
 

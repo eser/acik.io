@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/eser/go-service/pkg/proto-go/broadcast";
+option go_package = "github.com/eser/acik.io/pkg/proto-go/broadcast";
 
 package broadcast;
 

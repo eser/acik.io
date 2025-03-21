@@ -2,9 +2,9 @@ When working with this codebase, please follow these architectural principles an
 
 1. Hexagonal Architecture
 - The codebase follows strict hexagonal architecture (ports and adapters) principles
-- Business logic in pkg/sample/business/ must not have external dependencies
+- Business logic in pkg/api/business/ must not have external dependencies
 - All external interactions must go through interfaces (ports) defined in the business layer
-- Adapters in pkg/sample/adapters/ implement these interfaces
+- Adapters in pkg/api/adapters/ implement these interfaces
 - Ports exist as interfaces in the business layer
 
 1. Dependency Rules
@@ -15,7 +15,7 @@ When working with this codebase, please follow these architectural principles an
 
 1. Package Structure
 - Business logic packages should define their interfaces and types first
-- Each business domain should have its own package under pkg/sample/business/
+- Each business domain should have its own package under pkg/api/business/
 - Adapters should be organized by technology (http, storage, etc.)
 - Configuration should be injected via the appcontext
 

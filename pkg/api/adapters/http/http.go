@@ -7,6 +7,8 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/eser/acik.io/pkg/api/adapters/storage"
+	"github.com/eser/acik.io/pkg/api/business/channels"
 	"github.com/eser/ajan/datafx"
 	"github.com/eser/ajan/httpfx"
 	"github.com/eser/ajan/httpfx/middlewares"
@@ -16,8 +18,6 @@ import (
 	"github.com/eser/ajan/lib"
 	"github.com/eser/ajan/logfx"
 	"github.com/eser/ajan/metricsfx"
-	"github.com/eser/go-service/pkg/sample/adapters/storage"
-	"github.com/eser/go-service/pkg/sample/business/channels"
 )
 
 func RegisterHttpRoutes(routes *httpfx.Router, logger *logfx.Logger, dataRegistry *datafx.Registry) {
