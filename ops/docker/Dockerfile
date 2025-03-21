@@ -68,7 +68,10 @@ RUN go build ./cmd/serve/
 # -----------------------
 FROM upstream-runner AS runner-production
 
-RUN groupadd -r nonroot && useradd -r -g nonroot nonroot
+RUN apt-get update && \
+  apt-get -y install --no-install-recommends curl && \
+  groupadd -r nonroot && \
+  useradd -r -g nonroot nonroot
 
 # Copy the binary from the builder-production container
 COPY --from=builder-production --chown=nonroot:nonroot /app/serve /
