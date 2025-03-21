@@ -1,7 +1,8 @@
 # versions
 
 FROM golang:1-bookworm AS upstream-builder
-FROM gcr.io/distroless/base-debian12 AS upstream-runner
+# FROM gcr.io/distroless/base-debian12 AS upstream-runner
+FROM debian:bookworm-slim AS upstream-runner
 
 # Create a minimal image base-debian12 or static-debian12
 # (see: https://github.com/GoogleContainerTools/distroless#why-should-i-use-distroless-images)
