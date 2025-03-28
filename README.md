@@ -32,7 +32,7 @@ This project follows hexagonal architecture principles, also known as ports and 
 - Contains domain entities and business rules
 - Defines interfaces (ports) that the outside world must implement
 - No external dependencies, pure business logic
-- Example: `channels.Service` interface in `pkg/api/business/channels/service.go`
+- Example: `profiles.Service` interface in `pkg/api/business/profiles/service.go`
 
 ### Adapters (`pkg/api/adapters/`)
 - Implements interfaces defined by the business logic
@@ -41,7 +41,6 @@ This project follows hexagonal architecture principles, also known as ports and 
   - `appcontext/`: Application configuration and context
   - `storage/`: Database repositories
   - `http/`: HTTP server and handlers
-  - `grpc/`: GRPC server and handlers
 
 
 ## Directories
@@ -57,11 +56,9 @@ This project follows hexagonal architecture principles, also known as ports and 
 │       ├── adapters/        # Implementation of ports (adapters)
 │       │   ├── appcontext/  # Application context and configuration
 │       │   ├── http/        # HTTP server and handlers
-│       │   ├── grpc/        # GRPC server and handlers
 │       │   └── storage/     # Database repositories
 │       └── business/        # Business logic and domain models
-│           ├── channels/    # Channel-related business objects
-│           └── tenants/     # Tenant-related business objects
+│           └── profiles/    # Profile-related business objects
 ├── etc/
 │   └── data/                # Data source-related files
 │       └── default/         # Data source name
@@ -110,7 +107,6 @@ This project follows hexagonal architecture principles, also known as ports and 
   - Install and enable [pre-commit](https://pre-commit.com/#install)
   - Install [GNU make](https://www.gnu.org/software/make/)
   - Install [act](https://nektosact.com/installation/index.html)
-  - Install [protobuf](https://github.com/protocolbuffers/protobuf/releases)
   - Install [Air](https://github.com/air-verse/air#installation)
   - Install generators and checkers via `go tool`
 
@@ -139,20 +135,11 @@ This project follows hexagonal architecture principles, also known as ports and 
   ==> Installing act
   ...
 
-  $ brew install protobuf
-  ==> Fetching dependencies for protobuf
-  ==> Fetching protobuf
-  ==> Installing dependencies for protobuf
-  ==> Installing protobuf
-  ...
-
   $ make init-generators
   go: downloading github.com/sqlc-dev/sqlc/cmd/sqlc v0.0.0
   go: downloading github.com/vektra/mockery/v2 v0.0.0
   go: downloading golang.org/x/tools/cmd/stringer v0.0.0
   go: downloading github.com/jandelgado/gcov2lcov v0.0.0
-  go: downloading google.golang.org/protobuf/cmd/protoc-gen-go v0.0.0
-  go: downloading google.golang.org/grpc/cmd/protoc-gen-go-grpc v0.0.0
 
   $ make init-checkers
   go: downloading github.com/golangci/golangci-lint/cmd/golangci-lint v0.0.0

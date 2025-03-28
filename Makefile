@@ -1,7 +1,7 @@
 # .RECIPEPREFIX := $(.RECIPEPREFIX)<space>
 TESTCOVERAGE_THRESHOLD=0
 
-ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+# ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 default: help
 
@@ -21,7 +21,6 @@ init-tools: ## Initializes tools.
 	[ -f .git/hooks/pre-commit ] || pre-commit install
 	command -v make >/dev/null || brew install make
 	command -v act >/dev/null || brew install act
-	command -v protoc >/dev/null || brew install protobuf
 	go tool -n air >/dev/null || go get -tool github.com/air-verse/air@latest
 
 .PHONY: init-generators
@@ -30,8 +29,6 @@ init-generators: ## Initializes generators.
 	go tool -n mockery > /dev/null || go get -tool github.com/vektra/mockery/v2@latest
 	go tool -n stringer >/dev/null || go get -tool golang.org/x/tools/cmd/stringer@latest
 	go tool -n gcov2lcov >/dev/null || go get -tool github.com/jandelgado/gcov2lcov@latest
-	go tool -n protoc-gen-go >/dev/null || go get -tool google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	go tool -n protoc-gen-go-grpc >/dev/null || go get -tool google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 .PHONY: init-checkers
 init-checkers: ## Initializes checkers.
@@ -47,9 +44,13 @@ init: init-tools init-generators init-checkers dep # Initializes the project.
 generate: ## Runs auto-generated code generation tools.
 	go generate ./...
 
-.PHONY: migrate
-migrate: ## Runs the migration command.
-	go run ./cmd/migrate/ $(ARGS)
+.PHONY: migrate-up
+migrate-up: ## Runs the migration up command.
+	go run ./cmd/migrate/ default up
+
+.PHONY: migrate-down
+migrate-down: ## Runs the migration down command.
+	go run ./cmd/migrate/ default down
 
 .PHONY: build
 build: ## Builds the entire codebase.
@@ -155,20 +156,6 @@ container-logs: ## Shows the logs of the container.
 .PHONY: container-cli
 container-cli: ## Opens a shell in the container.
 	docker compose --file ./ops/docker/compose.yml exec api bash
-
-.PHONY: generate-proto
-generate-proto: ## Generates the proto stubs.
-	@{ \
-	  for f in ./specs/proto/*; do \
-	    current_proto="$$(basename $$f)"; \
-	    echo "Generating stubs for $$current_proto"; \
-			\
-			protoc --proto_path=./specs/proto/ \
-				--go_out=./pkg/proto-go/ --go_opt=paths=source_relative \
-				--go-grpc_out=./pkg/proto-go/ --go-grpc_opt=paths=source_relative \
-				"./specs/proto/$$current_proto/$$current_proto.proto"; \
-	  done \
-	}
 
 %:
 	@:

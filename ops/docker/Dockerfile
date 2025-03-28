@@ -12,11 +12,6 @@ FROM debian:bookworm-slim AS upstream-runner
 # ------------------
 FROM upstream-builder AS builder-base
 
-# Install the Protocol Buffers Library and Compiler
-RUN apt-get update && apt-get -y install --no-install-recommends \
-  libprotobuf-dev \
-  protobuf-compiler
-
 # Configuration
 ARG GH_LOGIN
 ENV GH_LOGIN=$GH_USER

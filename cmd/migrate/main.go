@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	ErrDatasourceNameRequired   = errors.New("data source name is required")
+	ErrDatasourceNameRequired   = errors.New("datasource name is required")
 	ErrCommandRequired          = errors.New("command is required")
 	ErrAppContextNotInitialized = errors.New("app context is not initialized")
-	ErrDatasourceNotInitialized = errors.New("data source is not initialized")
-	ErrDatasourceNotSqlDb       = errors.New("data source is not an instance of *sql.DB")
+	ErrDatasourceNotInitialized = errors.New("datasource is not initialized")
+	ErrDatasourceNotSqlDb       = errors.New("datasource is not an instance of *sql.DB")
 	ErrFailedToRunGoose         = errors.New("failed to run goose")
 )
 

@@ -2,13 +2,10 @@ package http
 
 import (
 	"context"
-	"encoding/json"
-	"io"
-	"log/slog"
 	"net/http"
 
 	"github.com/eser/acik.io/pkg/api/adapters/storage"
-	"github.com/eser/acik.io/pkg/api/business/channels"
+	"github.com/eser/acik.io/pkg/api/business/profiles"
 	"github.com/eser/ajan/datafx"
 	"github.com/eser/ajan/httpfx"
 	"github.com/eser/ajan/httpfx/middlewares"
@@ -22,48 +19,23 @@ import (
 
 func RegisterHttpRoutes(routes *httpfx.Router, logger *logfx.Logger, dataRegistry *datafx.Registry) {
 	routes.
-		Route("GET /channels", func(ctx *httpfx.Context) httpfx.Result {
-			queries, err := storage.NewFromDefault(dataRegistry)
+		Route("GET /profiles", func(ctx *httpfx.Context) httpfx.Result {
+			store, err := storage.NewFromDefault(dataRegistry)
 			if err != nil {
 				return ctx.Results.Error(http.StatusInternalServerError, []byte(err.Error()))
 			}
 
-			service := channels.NewService(queries)
+			service := profiles.NewService(store)
 
-			channels, err := service.List(ctx.Request.Context())
+			records, err := service.List(ctx.Request.Context())
 			if err != nil {
 				return ctx.Results.Error(http.StatusInternalServerError, []byte(err.Error()))
 			}
 
-			return ctx.Results.Json(channels)
+			return ctx.Results.Json(records)
 		}).
-		HasSummary("List channels").
-		HasDescription("List channels.").
-		HasResponse(http.StatusOK)
-
-	routes.
-		Route("POST /send", func(ctx *httpfx.Context) httpfx.Result {
-			body, err := io.ReadAll(ctx.Request.Body)
-			if err != nil {
-				return ctx.Results.Error(http.StatusInternalServerError, []byte(err.Error()))
-			}
-
-			var payload channels.Channel
-			err = json.Unmarshal(body, &payload)
-			if err != nil {
-				return ctx.Results.Error(http.StatusBadRequest, []byte(err.Error()))
-			}
-
-			logger.Info(
-				"Send",
-				slog.String("id", payload.Id),
-				slog.String("name", payload.Name.String),
-			)
-
-			return ctx.Results.Ok()
-		}).
-		HasSummary("Send a message to a channel").
-		HasDescription("Send a message to a channel.").
+		HasSummary("List profiles").
+		HasDescription("List profiles.").
 		HasResponse(http.StatusOK)
 }
 

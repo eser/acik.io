@@ -50,6 +50,11 @@ repos:
     rev: v1.63.4
     hooks:
       - id: golangci-lint
+  # - repo: https://github.com/sbdchd/squawk
+  #   rev: v1.5.5
+  #   hooks:
+  #    - id: squawk
+  #      files: etc/data/default/migrations/
   - repo: local
     hooks:
       - id: checks

@@ -11,7 +11,7 @@ sql:
   # Default
   # ------------------------------------------------------------
   - engine: "postgresql"
-    queries: "etc/data/default/queries/channels.sql"
+    queries: "etc/data/default/queries/profiles.sql"
     schema: "etc/data/default/migrations"
     rules:
       - sqlc/db-prepare
@@ -28,8 +28,8 @@ sql:
           emit_sql_as_comment: true
           emit_result_struct_pointers: true
           json_tags_case_style: "camel"
-          output_models_package: "channels"
-          output_models_file_name: "business/channels/types_gen.go"
+          output_models_package: "profiles"
+          output_models_file_name: "business/profiles/types_gen.go"
           output_db_package: "storage"
           output_db_file_name: "adapters/storage/db_gen.go"
           output_files_package: "storage"
